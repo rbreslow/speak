@@ -1,0 +1,29 @@
+version: "2.3"
+services:
+  garrysmodds:
+    image: quay.io/rbreslow/garrysmodds:slim
+    volumes:
+      - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
+    tty: true
+    ports:
+      - "27015:27015"
+      - "27015:27015/udp"
+    command: [
+      "-game garrysmod",
+      "-maxplayers 16",
+      "+gamemode sandbox",
+      "map gm_contruct"
+    ]
+
+  app:
+    image: node:10-slim
+    volumes:
+      - ./src/app:/usr/local/src
+    working_dir: /usr/local/src
+    command: yarn run start
+
+  luacheck:
+    image: quay.io/rbreslow/luacheck:latest
+    volumes:
+      - ./:/usr/local/src
+    working_dir: /usr/local/src

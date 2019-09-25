@@ -1,0 +1,209 @@
+@import "fonts/emoji";
+@import "fonts/inter";
+@import "fonts/roboto";
+
+$fast-transition-time: 0.5s;
+$slow-transition-time: 0.75s;
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  // TODO: add support for DPI
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  overflow-x: visible;
+
+  // without this, messages will encroach upon the footer
+  overflow-y: hidden;
+
+  // TODO: this should be in a container?
+  display: flex;
+  flex-direction: column;
+}
+
+::-webkit-scrollbar {
+  // FIXME: the presense of the scrollbar changes the appearance of a very long,
+  // unwrappable string in the chatbox
+  width: 7px;
+  // make the scrollbar shrink vertically
+  margin: 8px 0 8px 0;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(171, 171, 171, 0);
+
+  &:hover {
+    background: rgba(171, 171, 171, 1);
+  }
+}
+
+::placeholder {
+  color: rgba(163, 171, 180, 1);
+}
+
+a,
+a:visited {
+  color: rgba(29, 155, 209, 1);
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgba(29, 155, 209, 1);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 1.5em;
+  height: 1.5em;
+  margin: 1px 0 1px 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 0 1px rgba(29, 155, 209, 1);
+  }
+}
+
+.messages {
+  height: 100%;
+  margin: 0 0 6px 0;
+  padding: 8px 0 8px 4px;
+
+  // tells the browser to account for any border and padding in the values you
+  // specify for an element's width and height.
+  box-sizing: border-box;
+
+  // if all items have flex-grow set to 1, the remaining space in the container
+  // will be distributed equally to all children.
+  flex-grow: 1;
+
+  // background is hidden by default
+  background: rgba(0, 0, 0, 0);
+  transition: background $fast-transition-time;
+
+  // we want to explicitly say what is selectable
+  overflow-y: hidden;
+  -webkit-user-select: none;
+  word-wrap: break-word;
+  list-style-type: none;
+
+  &.open {
+    overflow-y: scroll;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  &__message {
+    padding: 2px 0 2px 4px;
+    overflow: hidden;
+    background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+    -webkit-user-select: text;
+    transition: opacity $slow-transition-time;
+
+    &.new,
+    &.expired {
+      opacity: 0;
+    }
+
+    &.expired {
+      background: none;
+    }
+  }
+
+  &.opening &__message {
+    transition: opacity $fast-transition-time, background $fast-transition-time;
+  }
+
+  &.open &__message {
+    opacity: 1;
+    background: none;
+  }
+
+  &.closing &__message &.expired {
+    // expired messages should disappear with $fast-transition-time
+    opacity: 0;
+
+    // expired messages do not have a background gradient
+    background: none;
+    transition: opacity $fast-transition-time, background 0s;
+  }
+}
+
+.footer {
+  padding: 8px 8px 8px 8px;
+
+  // transition by opacity to hide child elements
+  opacity: 0;
+  transition: opacity $fast-transition-time;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-shrink: 0;
+
+  &.open {
+    opacity: 1;
+  }
+
+  &__input-form {
+    flex-grow: 1;
+
+    &__field {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-size: inherit;
+      font-family: inherit;
+      text-shadow: inherit;
+      outline: none;
+      -webkit-user-select: text;
+      color: rgba(255, 255, 255, 255);
+      background: 0;
+      border: 0;
+
+      &:focus {
+        background: 0;
+        border: 0;
+        outline: none;
+      }
+    }
+  }
+
+  &__btn {
+    height: 1em;
+    min-width: 1em;
+    margin: auto 0 auto 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    vertical-align: middle;
+    fill: rgba(163, 171, 180, 1);
+    cursor: pointer;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition: transform 0.1s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}

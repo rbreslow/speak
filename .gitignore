@@ -1,0 +1,13 @@
+# logs
+yarn-error.log*
+
+# dependency directories
+node_modules/
+
+# build output
+cl_theme.lua
+sv_resources.lua
+cl_emoji.lua
+dist
+*.bz2
+src/css

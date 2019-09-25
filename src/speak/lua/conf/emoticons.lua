@@ -1,0 +1,8 @@
+Emoticons:Define(":spider1:", "https://emoji.slack-edge.com/T0887PSCQ/spider1/86aabace07464d38.png")
+Emoticons:Define(":spider2:", "https://emoji.slack-edge.com/T0887PSCQ/spider2/08d8067f3900b90e.png")
+Emoticons:Define(":rolf:", "https://emoji.slack-edge.com/T0887PSCQ/rolf/60eed8eba015ab14.png")
+Emoticons:Define(":B1:", "http://orig11.deviantart.net/e380/f/2014/100/3/8/b1_in_hd_by_tomajko-d7dz8iy.png")
+Emoticons:Define(":nyan:", "https://emojis.slackmojis.com/emojis/images/1450458551/184/nyancat_big.gif")
+Emoticons:Define(":party_parrot:", "https://emojis.slackmojis.com/emojis/images/1471119458/990/party_parrot.gif")
+Emoticons:Define(":facepalm:", "https://emojis.slackmojis.com/emojis/images/1450319441/51/facepalm.png")
+Emoticons:Define(":meow_parrot:", "https://emojis.slackmojis.com/emojis/images/1563480763/5999/meow_party.gif")

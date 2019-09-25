@@ -1,0 +1,50 @@
+span.emoji {
+  display: -moz-inline-box;
+  display: inline-block;
+  *display: inline;
+  min-width: 1em;
+  height: 1em;
+  text-indent: -9999px;
+  vertical-align: baseline;
+  *vertical-align: auto;
+  background-repeat: no-repeat;
+  background-position: 50%, 50%;
+  background-size: 1em;
+  background-size: contain;
+  *zoom: 1;
+  -moz-box-orient: vertical;
+  -webkit-user-select: text;
+}
+
+span.emoji-sizer {
+  margin: 1px 0 1px 0;
+  font-size: 1.5em;
+  line-height: 0.81em;
+  vertical-align: middle;
+}
+
+span.emoji-outer {
+  display: -moz-inline-box;
+  display: inline-block;
+  *display: inline;
+  min-width: 1em;
+  height: 1em;
+}
+
+span.emoji-inner {
+  display: -moz-inline-box;
+  display: inline-block;
+  min-width: 100%;
+  height: 100%;
+  text-indent: -9999px;
+  vertical-align: baseline;
+  *vertical-align: auto;
+  *zoom: 1;
+}
+
+img.emoji {
+  min-width: 1.5em;
+  height: 1.5em;
+  margin: 1px 0 1px 0;
+  vertical-align: middle;
+}

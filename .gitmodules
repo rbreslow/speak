@@ -1,0 +1,6 @@
+[submodule "src/speak/lua/lib/i18n.lua"]
+	path = src/speak/lua/lib/i18n.lua
+	url = git@github.com:rbreslow/i18n.lua.git
+[submodule "src/speak/lua/lib/preferences.lua"]
+	path = src/speak/lua/lib/preferences.lua
+	url = http://github.com/rbreslow/preferences.lua

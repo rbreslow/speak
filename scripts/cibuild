@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#set -e
+
+if [[ -n "${SPEAK_DEBUG}" ]]; then
+    set -x
+fi
+
+DIR="$(dirname "$0")"
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Build application for staging or a release.
+"
+}
+
+if [[ -n "${GIT_COMMIT}" ]]; then
+    GIT_COMMIT="${GIT_COMMIT:0:7}"
+else
+    GIT_COMMIT="$(git rev-parse --short HEAD)"
+fi
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        echo "Updating Yarn dependencies"
+        docker-compose \
+            run --rm --no-deps app \
+            yarn install
+
+        ./scripts/test
+
+        echo "Building static asset bundle"
+        GIT_COMMIT="${GIT_COMMIT}" docker-compose \
+            run --rm --no-deps app \
+            yarn run build
+
+        echo "Packing theme"
+        cp "${DIR}/../src/speak/lua/speak/cl_theme.lua.template" "${DIR}/../src/speak/lua/speak/cl_theme.lua"
+        printf "\nspeak.encodedTheme = [[%s]]\n" "$(base64 -i ./src/app/dist/index.html)" >>"${DIR}/../src/speak/lua/speak/cl_theme.lua"
+
+        echo "Packing emoji autocompletion data"
+        cp "${DIR}/../src/speak/lua/speak/cl_emoji.lua.template" "${DIR}/../src/speak/lua/speak/cl_emoji.lua"
+        emoji="$(jq -r '. |  map("\":" + .short_name + ":\"") | join(",")' "${DIR}/../src/app/node_modules/emoji-datasource/emoji.json")"
+        printf "speak.emoji = {%s}\n" "${emoji}" >>"${DIR}/../src/speak/lua/speak/cl_emoji.lua"
+
+        echo "Packing FastDL dependencies"
+        cp "${DIR}/../src/speak/lua/speak/sv_resources.lua.template" "${DIR}/../src/speak/lua/speak/sv_resources.lua"
+        prefixes=(resource sound)
+        for prefix in "${prefixes[@]}"; do
+            for file in $(find "${DIR}/../src/speak/${prefix}" -type f ! -name '*.bz2' -a ! -name '.DS_Store'); do
+                resource_name="$(echo ${file} | awk -F'src/speak/' '{print $2}')"
+                printf "resource.AddFile(\"%s\")\n" "${resource_name}" >>"${DIR}/../src/speak/lua/speak/sv_resources.lua"
+                bzip2 --keep "${file}" 2>/dev/null
+                echo "${resource_name}"
+            done
+        done
+    fi
+fi
