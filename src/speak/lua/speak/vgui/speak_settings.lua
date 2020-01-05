@@ -1,7 +1,7 @@
 surface.CreateFont("speak.Settings.Heading", {
-    font = "Roboto",
+    font = "Trebuchet MS",
     extended = false,
-    size = 24,
+    size = 20,
     weight = 700,
     blursize = 0,
     scanlines = 0,
@@ -17,9 +17,9 @@ surface.CreateFont("speak.Settings.Heading", {
 })
 
 surface.CreateFont("speak.Settings.Paragraph", {
-    font = "Roboto",
+    font = "Tahoma",
     extended = false,
-    size = 18,
+    size = 14,
     weight = 500,
     blursize = 0,
     scanlines = 0,
@@ -51,9 +51,13 @@ function PANEL:Init()
 
     local root = vgui.Create("DPropertySheet", self)
     self.root = root
+    root:DockPadding(8, 0, 8, 8)
     root:Dock(FILL)
 
-    local messageDisplay = vgui.Create("DScrollPanel", root)
+    local panel = vgui.Create("DPanel", root)
+    panel:Dock(FILL)
+
+    local messageDisplay = vgui.Create("DScrollPanel", panel)
 
     local function padding(parent)
         local panel = vgui.Create("DPanel", parent)
@@ -73,14 +77,16 @@ function PANEL:Init()
         local heading = vgui.Create("DLabel", messageDisplay)
         heading:SetText(name)
         heading:SetFont("speak.Settings.Heading")
-        heading:SetColor(Color(255, 255, 255, 255))
+        heading:SetColor(Color(68, 68, 68, 255))
         heading:Dock(TOP)
+        heading:DockMargin(8, 0, 8, 0)
     end
 
     local function checkRow(text)
         local row = vgui.Create("DPanel", messageDisplay)
         row:SetPaintBackground(false)
         row:Dock(TOP)
+        row:DockPadding(8, 0, 8, 0)
 
         local buttonContainer = vgui.Create("DPanel", row);
         buttonContainer:SetPaintBackground(false)
@@ -95,7 +101,7 @@ function PANEL:Init()
 
         local testLabel = vgui.Create("DLabel", row)
         testLabel:SetText(text)
-        testLabel:SetTextColor(Color(255, 255, 255, 255))
+        testLabel:SetTextColor(Color(68, 68, 68, 255))
 
         testLabel:Dock(LEFT)
         testLabel:SetFont("speak.Settings.Paragraph")
@@ -115,6 +121,7 @@ function PANEL:Init()
         local row = vgui.Create("DPanel", messageDisplay)
         row:SetPaintBackground(false)
         row:Dock(TOP)
+        row:DockPadding(8, 0, 8, 0)
 
         local emojiPreview = vgui.Create("DHTML", row)
         emojiPreview:Dock(RIGHT)
@@ -152,7 +159,7 @@ function PANEL:Init()
         label:Dock(LEFT)
 
         label:SetText(rowName)
-        label:SetTextColor(Color(255, 255, 255, 255))
+        label:SetTextColor(Color(68, 68, 68, 255))
         label:SetFont("speak.Settings.Paragraph")
 
         label:SizeToContents()
@@ -170,6 +177,7 @@ function PANEL:Init()
         local row = vgui.Create("DPanel", parent)
         row:SetPaintBackground(false)
         row:Dock(TOP)
+        row:DockPadding(8, 0, 8, 0)
 
         local buttonContainer = vgui.Create("DPanel", row)
         buttonContainer:SetPaintBackground(false)
@@ -186,7 +194,7 @@ function PANEL:Init()
         label:Dock(LEFT)
 
         label:SetText(rowName)
-        label:SetTextColor(Color(255, 255, 255, 255))
+        label:SetTextColor(Color(68, 68, 68, 255))
         label:SetFont("speak.Settings.Paragraph")
 
         label:SizeToContents()
@@ -201,6 +209,7 @@ function PANEL:Init()
     end
 
     --[[ Begin: Avatar Style ]]
+    padding(messageDisplay)
     heading(i18n:Translate("AVATAR_STYLE"))
 
     local split = vgui.Create( "DIconLayout", messageDisplay)
@@ -261,7 +270,7 @@ function PANEL:Init()
 
         label = vgui.Create("DLabel", right)
         label:Dock(LEFT)
-        label:SetText("garry :D")
+        label:SetText("garry")
         label:SetTextColor(Color(255, 255, 100, 255))
         label:SetFont("ChatFont")
     else
@@ -276,7 +285,7 @@ function PANEL:Init()
 
         label = vgui.Create("DLabel", right)
         label:Dock(LEFT)
-        label:SetText("garry :D")
+        label:SetText("garry")
         label:SetTextColor(Color(255, 255, 100, 255))
         label:SetFont("ChatFont")
     end
@@ -298,7 +307,7 @@ function PANEL:Init()
 
             label = vgui.Create("DLabel", right)
             label:Dock(LEFT)
-            label:SetText("garry :D")
+            label:SetText("garry")
             label:SetTextColor(Color(255, 255, 100, 255))
             label:SetFont("ChatFont")
         end
@@ -344,7 +353,7 @@ function PANEL:Init()
 
             label = vgui.Create("DLabel", right)
             label:Dock(LEFT)
-            label:SetText("garry :D")
+            label:SetText("garry")
             label:SetTextColor(Color(255, 255, 100, 255))
             label:SetFont("ChatFont")
         end
@@ -364,15 +373,15 @@ function PANEL:Init()
     --[[ Begin: Tag Position ]]
     heading(i18n:Translate("TAG_POSITION"))
 
-    local split = vgui.Create( "DIconLayout", messageDisplay)
+    split = vgui.Create( "DIconLayout", messageDisplay)
     split:Dock(TOP)
     split:SetSpaceX(root:GetPadding())
 
-    local left = vgui.Create("DPanel", split)
+    left = vgui.Create("DPanel", split)
     left:SetPaintBackground(false)
     left:SetSize(self:GetWide() / 2 - root:GetPadding() * 2 - 1, left:GetTall() * 2)
 
-    local group = {
+    group = {
         radioRow(i18n:Translate("LEFT"), left),
         radioRow(i18n:Translate("RIGHT"), left)
     }
@@ -381,15 +390,15 @@ function PANEL:Init()
         group[i]:SetGroup(group)
     end
 
-    local right = vgui.Create("DPanel", split)
-    right:SetPaintBackground(false)
-    right:SetSize(self:GetWide() / 2 - root:GetPadding() * 2 - 1, right:GetTall() * 2)
+    local rightTags = vgui.Create("DPanel", split)
+    rightTags:SetPaintBackground(false)
+    rightTags:SetSize(self:GetWide() / 2 - root:GetPadding() * 2 - 1, rightTags:GetTall() * 2)
 
-    local tag1 = vgui.Create("DLabel", right)
+    local tag1 = vgui.Create("DLabel", rightTags)
     tag1:Dock(LEFT)
     tag1:SetFont("ChatFont")
 
-    local tag2 = vgui.Create("DLabel", right)
+    local tag2 = vgui.Create("DLabel", rightTags)
     tag2:Dock(LEFT)
     tag2:SetFont("ChatFont")
 
@@ -397,11 +406,11 @@ function PANEL:Init()
         if value then
             speak.prefs:SetBoolean("tag_position", true)
 
-            tag1:SetText("[" .. i18n:Translate("ADMIN") .. "]")
+            tag1:SetText("(" .. i18n:Translate("ADMIN") .. ")")
             tag1:SetTextColor(Color(255, 100, 100, 255))
             tag1:SizeToContents()
 
-            tag2:SetText(" garry :D ")
+            tag2:SetText(" garry ")
             tag2:SetTextColor(Color(255, 255, 100, 255))
             tag2:SizeToContents()
         end
@@ -411,11 +420,11 @@ function PANEL:Init()
         if value then
             speak.prefs:SetBoolean("tag_position", false)
 
-            tag2:SetText("[" .. i18n:Translate("ADMIN") .. "]")
+            tag2:SetText("(" .. i18n:Translate("ADMIN") .. ")")
             tag2:SetTextColor(Color(255, 100, 100, 255))
             tag2:SizeToContents()
 
-            tag1:SetText("garry :D ")
+            tag1:SetText("garry ")
             tag1:SetTextColor(Color(255, 255, 100, 255))
             tag1:SizeToContents()
         end
@@ -424,21 +433,21 @@ function PANEL:Init()
     if speak.prefs:Get("tag_position") then
         group[1]:SetActive(true)
 
-        tag1:SetText("[" .. i18n:Translate("ADMIN") .. "]")
+        tag1:SetText("(" .. i18n:Translate("ADMIN") .. ")")
         tag1:SetTextColor(Color(255, 100, 100, 255))
         tag1:SizeToContents()
 
-        tag2:SetText(" garry :D ")
+        tag2:SetText(" garry ")
         tag2:SetTextColor(Color(255, 255, 100, 255))
         tag2:SizeToContents()
     else
         group[2]:SetActive(true)
 
-        tag2:SetText("[" .. i18n:Translate("ADMIN") .. "]")
+        tag2:SetText("(" .. i18n:Translate("ADMIN") .. ")")
         tag2:SetTextColor(Color(255, 100, 100, 255))
         tag2:SizeToContents()
 
-        tag1:SetText("garry :D ")
+        tag1:SetText("garry ")
         tag1:SetTextColor(Color(255, 255, 100, 255))
         tag1:SizeToContents()
     end
@@ -450,7 +459,7 @@ function PANEL:Init()
     heading(i18n:Translate("DISPLAY_OPTIONS"))
     padding(messageDisplay)
 
-    local check = checkRow(i18n:Translate("DISPLAY_TIMESTAMPS"))
+    check = checkRow(i18n:Translate("DISPLAY_TIMESTAMPS"))
     check:SetValue(speak.prefs:Get("timestamps_enabled"))
     check.OnChange = function(self, value)
         speak.prefs:SetBoolean("timestamps_enabled", value)
@@ -470,7 +479,7 @@ function PANEL:Init()
 
     padding(messageDisplay)
 
-    local group = {
+    group = {
         emojiRow(i18n:Translate("APPLE"), "apple"),
         emojiRow(i18n:Translate("GOOGLE"), "google"),
         emojiRow(i18n:Translate("TWITTER"), "twitter"),
@@ -492,7 +501,7 @@ function PANEL:Init()
 
     padding(messageDisplay)
 
-    local check = checkRow(i18n:Translate("EMOJI_ENABLED"))
+    check = checkRow(i18n:Translate("EMOJI_ENABLED"))
     check:SetValue(speak.prefs:Get("emoji_enabled"))
     check.OnChange = function(self, value)
         speak.prefs:SetBoolean("emoji_enabled", value)
@@ -504,34 +513,35 @@ function PANEL:Init()
 
     messageDisplay = vgui.Create("DScrollPanel", root)
 
+    padding(messageDisplay)
     heading(i18n:Translate("SOUNDS"))
     padding(messageDisplay)
 
-    local split = vgui.Create( "DIconLayout", messageDisplay)
+    split = vgui.Create( "DIconLayout", messageDisplay)
     split:Dock(TOP)
     split:SetSpaceX(root:GetPadding())
 
-    local left = vgui.Create("DPanel", split)
+    left = vgui.Create("DPanel", split)
     left:SetPaintBackground(false)
     left:SetSize(self:GetWide() / 2 - root:GetPadding() * 2 - 1, left:GetTall() * 6)
 
-    local right = vgui.Create("DPanel", split)
-    right:SetPaintBackground(false)
-    right:SetSize(self:GetWide() / 2 - root:GetPadding() * 2 - 1, right:GetTall() * 6)
+    local rightSounds = vgui.Create("DPanel", split)
+    rightSounds:SetPaintBackground(false)
+    rightSounds:SetSize(self:GetWide() / 2 - root:GetPadding() * 2 - 1, rightSounds:GetTall() * 6)
 
-    local group = {
+    group = {
         radioRow("Ding", left),
         radioRow("Ta-da", left),
         radioRow("Here you go", left),
         radioRow("Knock Brush", left),
         radioRow("Boing", left),
         radioRow("Plink", left),
-        radioRow("Hi", right),
-        radioRow("Woah!", right),
-        radioRow("Drop", right),
-        radioRow("Wow", right),
-        radioRow("Yoink", right),
-        radioRow("None", right)
+        radioRow("Hi", rightSounds),
+        radioRow("Woah!", rightSounds),
+        radioRow("Drop", rightSounds),
+        radioRow("Wow", rightSounds),
+        radioRow("Yoink", rightSounds),
+        radioRow("None", rightSounds)
     }
 
     for i=1,#group do
@@ -560,6 +570,7 @@ function PANEL:Init()
 
     local button = vgui.Create( "DNumSlider", row)
     button:Dock(FILL)
+    button:DockPadding(8, 0, 8, 0)
     button:SetMin(0)
     button:SetMax(30)
     button:SetDecimals(0)
@@ -571,7 +582,7 @@ function PANEL:Init()
     heading(i18n:Translate("DO_NOT_DISTURB"))
     padding(messageDisplay)
 
-    local check = checkRow("Disable notifications")
+    check = checkRow("Disable notifications")
     check:SetValue(not speak.prefs:Get("notification_enabled"))
     check.OnChange = function(self, value)
         speak.prefs:SetBoolean("notification_enabled", not value)
@@ -579,7 +590,7 @@ function PANEL:Init()
 
     root:AddSheet(i18n:Translate("NOTIFICATIONS"), messageDisplay, "icon16/bell.png", false, false, i18n:Translate("NOTIFICATIONS_POPOVER"))
 
-    local settings = vgui.Create("DProperties", root)
+    local settings = vgui.Create("DProperties", panel)
 
     local timestampsColor = settings:CreateRow(i18n:Translate("TIMESTAMPS"), i18n:Translate("COLOR"))
     timestampsColor:Setup("VectorColor", {})
