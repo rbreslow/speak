@@ -387,12 +387,6 @@ else
     speak.view = vgui.Create("speak.Chatbox")
     speak.settings = vgui.Create("speak.Settings")
     
-    -- we're initializing before policies have been sent so we need to reinitialize after recieving as to hide certain preferences.
-    hook.Add("preferences.policyupdate", "speak.preferences.policyupdate", function()
-      speak.settings:Remove()
-      speak.settings = vgui.Create("speak.Settings")
-    end)
-    
     concommand.Add("speak_settings", function()
       speak.settings:SetVisible(true)
       speak.settings:MakePopup()
