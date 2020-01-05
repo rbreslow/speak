@@ -1,6 +1,6 @@
 -- Tags:DefineForSteamID64(76561198058648898, {
---     Color(255, 0, 0),
---     "Administrator"
+--     Color(205, 0, 205),
+--     "(VIP) :star2:"
 -- })
 
 Tags:UpdateClients()
