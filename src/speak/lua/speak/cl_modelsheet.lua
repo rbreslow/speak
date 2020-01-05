@@ -48,8 +48,6 @@ function ModelSheet.prototype:_Render()
     y = 0,
     alpha = true
   })
-
-  file.Write("modelsheet.png", data)
   
   self.data = string.gsub(util.Base64Encode(data), "\n", "")
   
