@@ -392,7 +392,7 @@ else
     concommand.Add("speak_settings", function()
       speak.settings:SetVisible(true)
       speak.settings:MakePopup()
-      speak.settings:AlphaTo(255, 0.1, 0, function() end)
+      speak.settings:AlphaTo(255, 0.25, 0, function() end)
       -- or else the chatbox is going to consume clicks
       speak.settings:SetFocusTopLevel(true)
     end)
