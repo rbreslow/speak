@@ -1,4 +1,16 @@
-speak.i18n = I18n(GetConVar("gmod_language"):GetString():sub(1, 2))
+local function getGameLocale()
+  return GetConVar("gmod_language"):GetString():sub(1, 2)
+end
+
+speak.i18n = I18n(getGameLocale())
+
+cvars.AddChangeCallback("gmod_language", function(_, _, _)
+  speak.i18n:SetLocale(getGameLocale())
+
+  -- refresh stale settings strings
+  speak.settings:Remove()
+  speak.settings = vgui.Create("speak.Settings")
+end)
 
 speak.i18n:Load({
   en = {
