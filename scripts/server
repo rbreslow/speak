@@ -8,7 +8,7 @@ fi
 
 function usage() {
     echo -n "Usage: $(basename "$0")
-Starts servers using docker-compose.
+Start Source Dedicated Server (srcds).
 "
 }
 
@@ -17,6 +17,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         docker-compose run --rm --service-ports \
-            garrysmodds
+            garrysmod
     fi
 fi

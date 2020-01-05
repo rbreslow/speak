@@ -1,6 +1,6 @@
-version: "2.3"
+version: "2.4"
 services:
-  garrysmodds:
+  garrysmod:
     image: quay.io/rbreslow/garrysmodds:slim
     volumes:
       - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
@@ -20,7 +20,7 @@ services:
     volumes:
       - ./src/app:/usr/local/src
     working_dir: /usr/local/src
-    command: yarn run start
+    command: yarn watch
 
   luacheck:
     image: quay.io/rbreslow/luacheck:latest
