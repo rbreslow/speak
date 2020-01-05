@@ -23,7 +23,7 @@ services:
     command: yarn watch
 
   luacheck:
-    image: quay.io/rbreslow/luacheck:latest
+    image: quay.io/rbreslow/luacheck:0.23.0-1
     volumes:
       - ./:/usr/local/src
     working_dir: /usr/local/src
