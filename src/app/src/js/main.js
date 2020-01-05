@@ -61,6 +61,24 @@ function isMention(object) {
   return has.call(object, 'mentionId') && has.call(object, 'mentionText');
 }
 
+// https://jsfiddle.net/intrinsica/9ryqet30
+function easeInOutSmoother(t) {
+  const ts = t * t;
+  const tc = ts * t;
+  return 6 * tc * ts - 15 * ts * ts + 10 * tc;
+}
+
+function lerp(delta, from, to) {
+  if (delta > 1) { return to; }
+  if (delta < 0) { return from; }
+
+  return from + (to - from) * delta;
+}
+
+function clamp(_in, low, high) {
+  return Math.min(Math.max(_in, low), high);
+}
+
 class ChatboxState {
   constructor() {
     this.currentScrollTop = messages.scrollTop;
@@ -82,9 +100,16 @@ class ChatboxState {
     inputForm.addEventListener('submit', ((e) => {
       e.preventDefault();
 
+      // if the user has scrolled up, teleport to the bottom
+      if (messages.scrollTop !== this.currentScrollTop) {
+        this.scroll(true);
+      }
+
       const canSay = /\S/.test(inputField.value);
 
       if (canSay) {
+        speak.Close();
+
         if (this.isTeamChat) {
           speak.SayTeam(inputField.value);
         } else {
@@ -95,14 +120,12 @@ class ChatboxState {
         if (this.history[0] !== inputField.value) {
           this.history.unshift(inputField.value);
         }
+      } else {
+        speak.Close();
       }
-
-      speak.Close();
 
       this.historyIndex = -1;
       inputField.value = '';
-
-      this.scroll();
     }));
 
     inputField.addEventListener('keydown', ((e) => {
@@ -143,6 +166,12 @@ class ChatboxState {
 
     inputField.addEventListener('input', () => speak.TextChanged(inputField.value));
     settingsButton.addEventListener('click', () => speak.OpenSettings());
+
+    // this is a hack to reduce the choppiness of the scroll() animation after
+    // chatbox has been resized
+    window.addEventListener('resize', () => {
+      this.scroll(true);
+    });
 
     // callback to Lua, chatbox has been initialized
     if (typeof speak !== 'undefined' && has.call(speak, 'ChatInitialized')) {
@@ -260,11 +289,12 @@ class ChatboxState {
   }
 
   addText(obj) {
-    // TODO: document this
-    if (this.isOpen
-      && MessageEvent.scrollTop === (messages.scrollHeight - messages.offsetHeight)) {
-      this.currentScrollTop = messages.scrollTop;
-    }
+    // if we resize the chatbox so it grows vertically and then append a
+    // message, some how it overrides messages.scrollTop as soon as
+    // messages.appendChild is invoked, in such a way that the end value of the
+    // scroll animation is already in place. capture the correct value here and
+    // reset after appending the message. this is a hack.
+    const { scrollTop } = messages;
 
     const message = document.createElement('li');
     message.classList.toggle('messages__message');
@@ -369,6 +399,9 @@ class ChatboxState {
 
     // FIXME: remove newMessage class which represrents a fade in animation
     setTimeout(() => message.classList.toggle('new'), 10);
+    // restore correct messages.scrollTop value (see above)
+    messages.scrollTop = scrollTop;
+
 
     // after 10 seconds, fade the message out
     setTimeout(() => message.classList.toggle('expired'), 9000);
@@ -376,14 +409,54 @@ class ChatboxState {
     this.scroll();
   }
 
-  scroll() {
+  scroll(skipAnim) {
+    // if the element has been totally scrolled
+    if (messages.scrollHeight - messages.scrollTop === messages.clientHeight) {
+      return;
+    }
+
+    if (skipAnim) {
+      messages.scrollTop = (messages.scrollHeight - messages.clientHeight);
+      this.currentScrollTop = messages.scrollTop;
+      return;
+    }
+
     // the user is scrolling, don't do anything
     if (this.isOpen && messages.scrollTop !== this.currentScrollTop) {
       return;
     }
 
-    messages.scrollTop = messages.scrollHeight;
-    this.currentScrollTop = messages.scrollTop;
+    // scale the lifetime of the animation to the size of the chatbox so the
+    // motion always is fixed. the value here is arbitrary, based on what
+    // "looks good"
+    const lifeTime = messages.clientHeight * 1;
+
+    const startVal = messages.scrollTop;
+    const endVal = (messages.scrollHeight - messages.clientHeight);
+
+    let startTime = null;
+    let value = startVal;
+
+    const think = (curTime) => {
+      if (!startTime) {
+        startTime = curTime;
+      }
+
+      let fraction = (curTime - startTime) / lifeTime;
+      fraction = clamp(fraction, 0, 1);
+
+      fraction = easeInOutSmoother(fraction);
+
+      value = lerp(fraction, startVal, endVal);
+
+      if (value < endVal) {
+        messages.scrollTop = value;
+        this.currentScrollTop = messages.scrollTop;
+        window.requestAnimationFrame(think);
+      }
+    };
+
+    window.requestAnimationFrame(think);
   }
 
   static focus() {
