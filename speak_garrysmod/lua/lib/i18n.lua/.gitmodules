@@ -1,0 +1,3 @@
+[submodule "is.lua"]
+	path = is.lua
+	url = git@github.com:jackwilsdon/is.lua.git
