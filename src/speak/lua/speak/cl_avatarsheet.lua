@@ -69,7 +69,6 @@ function AvatarSheet.prototype:Update(cb)
   local x = 0
   local y = 0
 
-  -- Prep and instantiate a sheet of avatars for rendering in HUDPaint
   for _, player in pairs(player.GetAll()) do
     if x == 16 then
       x = 0
