@@ -268,7 +268,8 @@ function speak.ParseChatText(...)
       
       if speak.prefs:Get("tag_position") then
         message = table.Add(message, tag[1])
-        
+        table.insert(message, " ")
+
         table.insert(message, team.GetColor(element:Team()))
         for _, token in pairs(tokenize(element:Nick())) do
           table.insert(message, token)
@@ -279,6 +280,7 @@ function speak.ParseChatText(...)
           table.insert(message, token)
         end
         
+        table.insert(message, " ")
         message = table.Add(message, tag[1])
       end
     elseif elementType == "Entity" then
