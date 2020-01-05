@@ -1,9 +1,8 @@
 @import "fonts/emoji";
 @import "fonts/inter";
 @import "fonts/roboto";
-
-$fast-transition-time: 0.5s;
-$slow-transition-time: 0.75s;
+$fast-transition-time: 0.25s;
+$slow-transition-time: 1.5s;
 
 html,
 body {
