@@ -3,6 +3,7 @@
 @import "fonts/roboto";
 $fast-transition-time: 0.25s;
 $slow-transition-time: 1.5s;
+$easeInOutSine: cubic-bezier(0.445, 0.05, 0.55, 0.95);
 
 html,
 body {
@@ -21,10 +22,8 @@ body {
   left: 0;
   position: absolute;
   overflow-x: visible;
-
   // without this, messages will encroach upon the footer
   overflow-y: hidden;
-
   // TODO: this should be in a container?
   display: flex;
   flex-direction: column;
@@ -86,77 +85,77 @@ a:hover {
   height: 100%;
   margin: 0 0 6px 0;
   padding: 8px 0 8px 4px;
-
   // tells the browser to account for any border and padding in the values you
   // specify for an element's width and height.
   box-sizing: border-box;
-
   // if all items have flex-grow set to 1, the remaining space in the container
   // will be distributed equally to all children.
   flex-grow: 1;
-
   // background is hidden by default
   background: rgba(0, 0, 0, 0);
-  transition: background $fast-transition-time;
-
+  transition: background $fast-transition-time $easeInOutSine;
   // we want to explicitly say what is selectable
   overflow-y: hidden;
   -webkit-user-select: none;
   word-wrap: break-word;
   list-style-type: none;
 
-  &.open {
-    overflow-y: scroll;
-    background: rgba(0, 0, 0, 0.3);
-  }
-
   &__message {
     padding: 2px 0 2px 4px;
     overflow: hidden;
-    background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+    opacity: 1;
     -webkit-user-select: text;
-    transition: opacity $slow-transition-time;
+    transition: opacity $slow-transition-time $easeInOutSine, background $slow-transition-time $easeInOutSine;
 
-    &.new,
-    &.expired {
+    &--new,
+    &--expired {
       opacity: 0;
     }
+  }
 
-    &.expired {
+  &--open {
+    overflow-y: scroll;
+    background: rgba(0, 0, 0, 0.3);
+
+    .messages__message {
+      opacity: 1;
       background: none;
     }
   }
 
-  &.opening &__message {
-    transition: opacity $fast-transition-time, background $fast-transition-time;
+  &--opening {
+    .messages__message {
+      transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+    }
   }
 
-  &.open &__message {
-    opacity: 1;
-    background: none;
-  }
+  &--closing {
+    .messages__message {
+      transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+    }
 
-  &.closing &__message &.expired {
-    // expired messages should disappear with $fast-transition-time
-    opacity: 0;
-
-    // expired messages do not have a background gradient
-    background: none;
-    transition: opacity $fast-transition-time, background 0s;
+    .messages__message--expired {
+      // the .messages--closing class is kept on for the duration of the
+      // transition (250ms) to supress the gradient background of
+      // .message__message. we do not set background: none; in
+      // .messages__message--expired because that causes the background to
+      // disappear before the initial fade out. i know this is a hack.
+      background: none;
+      transition: opacity $fast-transition-time $easeInOutSine, background 0s;
+    }
   }
 }
 
 .footer {
   padding: 8px 8px 8px 8px;
-
   // transition by opacity to hide child elements
   opacity: 0;
-  transition: opacity $fast-transition-time;
+  transition: opacity $fast-transition-time $easeInOutSine;
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   flex-shrink: 0;
 
-  &.open {
+  &--open {
     opacity: 1;
   }
 

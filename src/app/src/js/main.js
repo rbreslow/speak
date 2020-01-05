@@ -250,8 +250,8 @@ class ChatboxState {
 
     inputField.placeholder = isTeamChat ? sayTeam : say;
 
-    messages.classList.toggle('open');
-    footer.classList.toggle('open');
+    messages.classList.toggle('messages--open');
+    footer.classList.toggle('footer--open');
 
     // this ensures there will only ever be one timer, for example, if
     // someone is spamming open and close
@@ -259,9 +259,9 @@ class ChatboxState {
       clearTimeout(this.openingTimeout);
     }
     // toggle opening CSS animation
-    messages.classList.toggle('opening');
+    messages.classList.toggle('messages--opening');
     // we only want the animation to run once
-    this.openingTimeout = setTimeout(() => messages.classList.toggle('opening'), 10);
+    this.openingTimeout = setTimeout(() => messages.classList.toggle('messages--opening'), 10);
   }
 
   close() {
@@ -271,16 +271,17 @@ class ChatboxState {
 
     this.isOpen = false;
 
-    messages.classList.toggle('open');
-    footer.classList.toggle('open');
+    messages.classList.toggle('messages--open');
+    footer.classList.toggle('footer--open');
 
     if (this.closingTimeout) {
       clearTimeout(this.closingTimeout);
     }
     // toggle the CSS class for faster list element transitions so the
     // messages will disappear at the same rate as the background
-    messages.classList.toggle('closing');
-    this.closingTimeout = setTimeout(() => messages.classList.toggle('closing'), 10);
+    messages.classList.toggle('messages--closing');
+    // the 250ms delay is part of a hack that is explained in main.scss
+    this.closingTimeout = setTimeout(() => messages.classList.toggle('messages--closing'), 250);
 
     // reset selections
     window.getSelection().empty();
@@ -302,11 +303,14 @@ class ChatboxState {
 
     const message = document.createElement('li');
     message.classList.toggle('messages__message');
-    message.classList.toggle('new');
+    message.classList.toggle('messages__message--new');
 
     // default color
     let lastColor = {
-      r: 151, g: 255, b: 211, a: 255,
+      r: 151,
+      g: 255,
+      b: 211,
+      a: 255,
     };
 
     // default multiplier
@@ -401,14 +405,14 @@ class ChatboxState {
     // append message to messages array
     messages.appendChild(message);
 
-    // FIXME: remove newMessage class which represrents a fade in animation
-    setTimeout(() => message.classList.toggle('new'), 10);
     // restore correct messages.scrollTop value (see above)
     messages.scrollTop = scrollTop;
 
+    // remove --new modifier class which represrents a fade in animation
+    setTimeout(() => message.classList.toggle('messages__message--new'), 10);
 
-    // after 10 seconds, fade the message out
-    setTimeout(() => message.classList.toggle('expired'), 9000);
+    // after 16 seconds, fade the message out
+    setTimeout(() => message.classList.toggle('messages__message--expired'), 16000);
 
     this.scroll();
   }
