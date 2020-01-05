@@ -11,8 +11,54 @@ DIR="$(dirname "$0")"
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Build application for staging or a release.
+Build addon for distribution.
 "
+}
+
+function update_fastdl() {
+    echo "Updating FastDL"
+
+    pushd "${DIR}/../src/speak"
+
+    resource_file="lua/speak/sv_resources.lua"
+    fastdl_root="../../dist/fastdl"
+    prefixes=(resource sound)
+
+    # Wipe existing resource file
+    mkdir -p "${resource_file%/*}"
+    >"${resource_file}"
+
+    for prefix in "${prefixes[@]}"; do
+        find . -type d -name "${prefix}" | while read dir; do
+            find "${dir}" -type f ! -name '*.bz2' -a ! -name '.DS_Store' | while read file; do
+                # Virtual path of the file for resource.AddFile( string path )
+                resource="$(echo ${file#"./"} | sed -E 's/speak\/[[:alnum:]]+\/(.+)/\1/')"
+
+                # Append new resource.AddFile( string path ) statement
+                echo "Processing ${resource}"
+                if [[ $resource != maps/* ]]; then
+                    printf "resource.AddFile(\"%s\")\n" "${resource}" >>"${resource_file}"
+                fi
+
+                # Ensure FastDL directory structure exists
+                mkdir -p "${fastdl_root}/${resource%/*}"
+
+                # Only recompress resources if SHA512/256 is invalid
+                compressed_resource="${fastdl_root}/${resource}.bz2"
+                if [[ ! $(shasum -a 512256 -c "${compressed_resource}.checksum") ]]; then
+                    bzip2 -k -c "${file}" >"${compressed_resource}"
+                    shasum -a 512256 "${compressed_resource}" >"${compressed_resource}.checksum"
+
+                    # Hack to make SRCDS recognize bz2 files exist on FastDL
+                    if [[ $resource == *bsp ]]; then
+                        cp "${file}" "${fastdl_root}/${resource}"
+                    fi
+                fi
+            done
+        done
+    done
+
+    popd
 }
 
 if [[ -n "${GIT_COMMIT}" ]]; then
@@ -46,16 +92,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         emoji="$(jq -r '. |  map("\":" + .short_name + ":\"") | join(",")' "${DIR}/../src/app/node_modules/emoji-datasource/emoji.json")"
         printf "speak.emoji = {%s}\n" "${emoji}" >>"${DIR}/../src/speak/lua/speak/cl_emoji.lua"
 
-        echo "Packing FastDL dependencies"
-        cp "${DIR}/../src/speak/lua/speak/sv_resources.lua.template" "${DIR}/../src/speak/lua/speak/sv_resources.lua"
-        prefixes=(resource sound)
-        for prefix in "${prefixes[@]}"; do
-            for file in $(find "${DIR}/../src/speak/${prefix}" -type f ! -name '*.bz2' -a ! -name '.DS_Store'); do
-                resource_name="$(echo ${file} | awk -F'src/speak/' '{print $2}')"
-                printf "resource.AddFile(\"%s\")\n" "${resource_name}" >>"${DIR}/../src/speak/lua/speak/sv_resources.lua"
-                bzip2 --keep "${file}" 2>/dev/null
-                echo "${resource_name}"
-            done
-        done
+        update_fastdl
     fi
 fi
