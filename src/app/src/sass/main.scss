@@ -104,6 +104,7 @@ a:hover {
     padding: 2px 0 2px 4px;
     overflow: hidden;
     opacity: 1;
+    // background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
     -webkit-user-select: text;
     transition: opacity $slow-transition-time $easeInOutSine, background $slow-transition-time $easeInOutSine;
 
