@@ -162,6 +162,10 @@ class ChatboxState {
       } else {
         this.historyIndex = -1;
       }
+
+      if (inputField.value.length === 128) {
+        speak.MaxLengthHit();
+      }
     }));
 
     inputField.addEventListener('input', () => speak.TextChanged(inputField.value));

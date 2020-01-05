@@ -57,6 +57,10 @@ function PANEL:Init()
     chat.Close()
   end)
 
+  self.html:AddFunction("speak", "MaxLengthHit", function()
+    surface.PlaySound("Resource/warning.wav")
+  end)
+
   self:Refresh()
 
   self:SetVisible(true)
