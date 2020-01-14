@@ -55,7 +55,7 @@ function ModelSheet.prototype:_Render()
     self.cb(self.data)
   end
   
-  render.PopRenderTarget(rt)
+  render.PopRenderTarget()
   
   -- Destroy the used model instances
   for i=1,#self.models do
