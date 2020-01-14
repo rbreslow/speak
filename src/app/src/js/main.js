@@ -5,6 +5,15 @@ import '../sass/main.scss';
 
 const emoji = new EmojiConvertor();
 
+// Awesomium compatibility
+if (!window.requestAnimationFrame) {
+  window.requestAnimationFrame = (callback) => {
+    setTimeout(() => {
+      callback(new Date().getTime());
+    }, 1000 / 120); // 120 fps
+  };
+}
+
 emoji.img_sets.apple.path = 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@4.1.0/img/apple/64/';
 emoji.img_sets.google.path = 'https://cdn.jsdelivr.net/npm/emoji-datasource-google@4.1.0/img/google/64/';
 emoji.img_sets.twitter.path = 'https://cdn.jsdelivr.net/npm/emoji-datasource-twitter@4.1.0/img/twitter/64/';
@@ -130,9 +139,12 @@ class ChatboxState {
 
     inputField.addEventListener('keydown', ((e) => {
       if (e.keyCode === 9) {
-        speak.PressTab(inputField.value, (str) => {
+        const oldStr = speak.PressTab(inputField.value, (str) => {
           inputField.value = str;
         });
+        // Compatibility with Awesomium
+        inputField.value = oldStr;
+
         e.preventDefault();
       } else {
         speak.ClearEmojo();
@@ -211,7 +223,13 @@ class ChatboxState {
   }
 
   setFontBorderOpacity(fontBorderOpacity) {
-    this.fontBorderOpacity = fontBorderOpacity;
+    // Awesomium compatibility
+    let newFontBorderOpacity = fontBorderOpacity;
+    if (newFontBorderOpacity === 1) {
+      newFontBorderOpacity -= 0.01;
+    }
+
+    this.fontBorderOpacity = newFontBorderOpacity;
     this.updateFontBorder();
   }
 

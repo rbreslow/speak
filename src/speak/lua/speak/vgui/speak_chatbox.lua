@@ -61,6 +61,11 @@ function PANEL:Init()
     surface.PlaySound("Resource/warning.wav")
   end)
 
+  -- Awesomium compatibility
+  self.html:AddFunction("speak", "CurTime", function()
+    return CurTime() * 1000
+  end)
+
   self:Refresh()
 
   self:SetVisible(true)

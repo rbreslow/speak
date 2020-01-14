@@ -44,7 +44,8 @@ const config = {
       {
         test: /\.svg$/,
         use: 'url-loader'
-      }
+      },
+      { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
     ]
   },
   optimization: {

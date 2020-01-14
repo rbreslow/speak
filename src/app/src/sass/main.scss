@@ -24,9 +24,15 @@ body {
   overflow-x: visible;
   // without this, messages will encroach upon the footer
   overflow-y: hidden;
-  // TODO: this should be in a container?
-  display: flex;
-  flex-direction: column;
+  // Awesomium compatibility
+  display: -webkit-box;
+  -webkit-box-pack: justify;
+  -webkit-box-orient: vertical;
+
+  @supports (display: flex) {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -84,16 +90,28 @@ a:hover {
 .messages {
   height: 100%;
   margin: 0 0 6px 0;
-  padding: 8px 0 8px 4px;
-  // tells the browser to account for any border and padding in the values you
-  // specify for an element's width and height.
-  box-sizing: border-box;
-  // if all items have flex-grow set to 1, the remaining space in the container
-  // will be distributed equally to all children.
-  flex-grow: 1;
+  // 7px right padding compensates for scrollbar
+  padding: 8px 7px 8px 4px;
+  // Awesomium compatibility
+  -webkit-box-flex: 1;
+  -webkit-box-sizing: border-box;
+
+  @supports (display: flex) {
+    // tells the browser to account for any border and padding in the values you
+    // specify for an element's width and height.
+    box-sizing: border-box;
+    // if all items have flex-grow set to 1, the remaining space in the container
+    // will be distributed equally to all children.
+    flex-grow: 1;
+  }
   // background is hidden by default
   background: rgba(0, 0, 0, 0);
-  transition: background $fast-transition-time $easeInOutSine;
+  // Awesomium compatibility
+  -webkit-transition: background $fast-transition-time $easeInOutSine;
+
+  @supports (transition: initial) {
+    transition: background $fast-transition-time $easeInOutSine;
+  }
   // we want to explicitly say what is selectable
   overflow-y: hidden;
   -webkit-user-select: none;
@@ -103,10 +121,21 @@ a:hover {
   &__message {
     padding: 2px 0 2px 4px;
     overflow: hidden;
-    opacity: 1;
+
+    // Awesomium compatibility
+    opacity: 0.9999;
+
+    @supports (display: flex) {
+      opacity: 1;
+    }
     // background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
     -webkit-user-select: text;
-    transition: opacity $slow-transition-time $easeInOutSine, background $slow-transition-time $easeInOutSine;
+    // Awesomium compatibility
+    -webkit-transition: opacity $slow-transition-time $easeInOutSine, background $slow-transition-time $easeInOutSine;
+
+    @supports (transition: initial) {
+      transition: opacity $slow-transition-time $easeInOutSine, background $slow-transition-time $easeInOutSine;
+    }
 
     &--new,
     &--expired {
@@ -116,23 +145,40 @@ a:hover {
 
   &--open {
     overflow-y: scroll;
+    padding: 8px 0 8px 4px;
     background: rgba(0, 0, 0, 0.3);
 
     .messages__message {
-      opacity: 1;
+      // Awesomium compatibility
+      opacity: 0.9999;
+
+      @supports (display: flex) {
+        opacity: 1;
+      }
+
       background: none;
     }
   }
 
   &--opening {
     .messages__message {
-      transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+      // Awesomium compatibility
+      -webkit-transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+
+      @supports (transition: initial) {
+        transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+      }
     }
   }
 
   &--closing {
     .messages__message {
-      transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+      // Awesomium compatibility
+      -webkit-transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+
+      @supports (transition: initial) {
+        transition: opacity $fast-transition-time $easeInOutSine, background $fast-transition-time $easeInOutSine;
+      }
     }
 
     .messages__message--expired {
@@ -142,7 +188,12 @@ a:hover {
       // .messages__message--expired because that causes the background to
       // disappear before the initial fade out. i know this is a hack.
       background: none;
-      transition: opacity $fast-transition-time $easeInOutSine, background 0s;
+      // Awesomium compatibility
+      -webkit-transition: opacity $fast-transition-time $easeInOutSine, background 0s;
+
+      @supports (transition: initial) {
+        transition: opacity $fast-transition-time $easeInOutSine, background 0s;
+      }
     }
   }
 }
@@ -151,17 +202,42 @@ a:hover {
   padding: 8px 8px 8px 8px;
   // transition by opacity to hide child elements
   opacity: 0;
-  transition: opacity $fast-transition-time $easeInOutSine;
+  // Awesomium compatibility
+  -webkit-transition: opacity $fast-transition-time $easeInOutSine;
+
+  @supports (transition: initial) {
+    transition: opacity $fast-transition-time $easeInOutSine;
+  }
+
   background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-shrink: 0;
+
+  // Awesomium compatibility
+  display: -webkit-box;
+  -webkit-box-flex: 0;
+  -webkit-box-direction: normal;
+  -webkit-box-orient: horizontal;
+
+  @supports (display: flex) {
+    display: flex;
+    flex-shrink: 0;
+  }
 
   &--open {
-    opacity: 1;
+    // Awesomium compatibility
+    opacity: 0.9999;
+
+    @supports (display: flex) {
+      opacity: 1;
+    }
   }
 
   &__input-form {
-    flex-grow: 1;
+    // Awesomium compatibility
+    -webkit-box-flex: 1;
+
+    @supports (display: flex) {
+      flex-grow: 1;
+    }
 
     &__field {
       width: 100%;
@@ -188,7 +264,13 @@ a:hover {
     height: 1em;
     min-width: 1em;
     margin: auto 0 auto 8px;
-    box-sizing: border-box;
+    // Awesomium compatibility
+    -webkit-box-sizing: border-box;
+
+    @supports (display: flex) {
+      box-sizing: border-box;
+    }
+
     overflow: hidden;
     vertical-align: middle;
     fill: rgba(163, 171, 180, 1);

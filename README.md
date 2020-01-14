@@ -2,6 +2,8 @@
 
 A Garry's Mod chatbox addon 💬.
 
+![](doc/screenshot.png)
+
 - [Requirements](#requirements)
 - [Development](#development)
   - [Ports](#ports)
