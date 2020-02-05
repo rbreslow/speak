@@ -596,6 +596,11 @@ atob@^2.1.1:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+autocompleter@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/autocompleter/-/autocompleter-6.0.1.tgz#e21fd4457ea43d6bcf6c67ee2f2ad86517e986ed"
+  integrity sha512-1NVj2Pif+TrTNRwmqRfMdRl9o+1B1k944hPYm5rdPGJLK0t3hb7UGwCsTgFqa/MZ/27FJ2ZtZPlrGcwAfFGyVg==
+
 autolink-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/autolink-js/-/autolink-js-1.0.2.tgz#2fb443ab8b101ab1591560cc699b2a5c33f0bdf3"

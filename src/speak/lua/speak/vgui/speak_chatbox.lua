@@ -61,6 +61,11 @@ function PANEL:Init()
     surface.PlaySound("Resource/warning.wav")
   end)
 
+  self.html:AddFunction("speak", "GetAutocompletionData", function()
+    print("returning speak.emojo")
+    return speak.emojo
+  end)
+
   self:Refresh()
 
   self:SetVisible(true)

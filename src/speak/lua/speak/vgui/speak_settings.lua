@@ -34,6 +34,35 @@ surface.CreateFont("speak.Settings.Paragraph", {
     outline = false,
 })
 
+-- Source doesn't get font weights right outside of Windows. Yes, this may be
+-- overwriting a default font, but it's just going to make things look better
+-- across the board.
+if not system.IsWindows() then
+    local y = ScrH()
+    local fontSize = nil
+
+    -- These mysterious y values were taken from ChatScheme.res.
+    if y > 480 and y < 599 then
+        fontSize = 12
+    elseif y > 600 and y < 767 then
+        fontSize = 14
+    elseif y > 768 and y < 1023 then
+        fontSize = 15
+    elseif y > 1024 and y < 1199 then
+        fontSize = 17
+    elseif y > 1200 then
+        fontSize = 22
+    end
+
+    surface.CreateFont("ChatFont",{
+        font = "Verdana Bold",
+        size = fontSize,
+        weight = 700,
+        antialias = false,
+        shadow = true
+    })   
+end
+
 local PANEL = {}
 
 function PANEL:Init()

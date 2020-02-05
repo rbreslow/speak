@@ -439,10 +439,32 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
       speak.UpdateAvatars()
     end
   end)
+
+  local function cachePng(url, cb)
+    local fileName = util.Base64Encode(url):reverse():sub(5); --obfuscate the URL
   
-  hook.Add("HUDPaint", "speak.HUDPaint", function()
-    -- paint the chatbox as a normal HUD element like old chat
-    speak.view:PaintManual()
+    if file.Exists( fileName .. ".jpg", "DATA") then
+      cb(Material("../data/" .. fileName .. ".jpg"));
+    else
+      http.Fetch(url,
+        function(body, len, headers, code)
+          file.Write(fileName .. ".jpg", body);
+          cb(Material("../data/" .. fileName .. ".jpg"));
+        end,
+        function(error) return false; end
+      );
+    end
+  end
+  
+  cachePng("https://i.imgur.com/PtQbU0d.jpg", function(mat) 
+    hook.Add("HUDPaint", "speak.HUDPaint", function()
+      surface.SetMaterial(mat)
+      surface.SetDrawColor(Color(255, 255, 255, 255))
+      --surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
+  
+      -- paint the chatbox as a normal HUD element like old chat
+      speak.view:PaintManual()
+    end)
   end)
   
   hook.Add("PreRender", "speak.PreRender", function()
@@ -476,7 +498,7 @@ hook.Add("OnChatTab", "speak.OnChatTab", function(str)
   str = string.TrimRight(str)
   
   local lastWord
-  for word in string.gmatch( str, "[^ ]+" ) do
+  for word in string.gmatch(str, "[^ ]+") do
     lastWord = word
   end
   

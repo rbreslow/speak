@@ -71,12 +71,12 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        echo "Updating Yarn dependencies"
-        docker-compose \
-            run --rm --no-deps app \
-            yarn install
+        # echo "Updating Yarn dependencies"
+        # docker-compose \
+        #     run --rm --no-deps app \
+        #     yarn install
 
-        ./scripts/test
+        # ./scripts/test
 
         echo "Building static asset bundle"
         GIT_COMMIT="${GIT_COMMIT}" docker-compose \
@@ -92,6 +92,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         emoji="$(jq -r '. |  map("\":" + .short_name + ":\"") | join(",")' "${DIR}/../src/app/node_modules/emoji-datasource/emoji.json")"
         printf "speak.emoji = {%s}\n" "${emoji}" >>"${DIR}/../src/speak/lua/speak/cl_emoji.lua"
 
-        update_fastdl
+        # update_fastdl
     fi
 fi

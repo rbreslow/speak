@@ -1,5 +1,6 @@
 import EmojiConvertor from 'emoji-js';
 import 'autolink-js';
+import autocomplete from 'autocompleter';
 
 import '../sass/main.scss';
 
@@ -163,18 +164,101 @@ class ChatboxState {
         this.historyIndex = -1;
       }
 
+      if(e.keyCode === 13) {
+          // I know.
+        const autocompletes = document.getElementsByClassName('autocomplete ');
+
+        console.log(autocompletes.length + "");
+
+        for(var i = 0; i < autocompletes.length; i++) {
+          const autocomplete = autocompletes[i];
+          console.log("patrol");
+
+          // Do not submit if we are selecting an autocomplete suggestion
+          if(autocomplete.parentNode) {
+            console.log("holla");
+            e.preventDefault();
+          }
+        }
+      }
+
       if (inputField.value.length === 128) {
         speak.MaxLengthHit();
       }
     }));
 
-    inputField.addEventListener('input', () => speak.TextChanged(inputField.value));
+    inputField.addEventListener('input', (e) => {
+      // hack to make autocompletion work
+      // https://github.com/kraaden/autocomplete/blob/e1732fd9309d7c5ae2382bc2a0cc70271954052a/autocomplete.js#L22
+      inputField.dispatchEvent(new CustomEvent('keyup', e));
+      speak.TextChanged(inputField.value)
+    });
     settingsButton.addEventListener('click', () => speak.OpenSettings());
 
     // this is a hack to reduce the choppiness of the scroll() animation after
     // chatbox has been resized
     window.addEventListener('resize', () => {
       this.scroll(true);
+    });
+
+    speak.GetAutocompletionData(data => {
+      let emojis = [];
+
+      for(let i = 0; i < data.length; i++) {
+        emojis.push({ label: data[i], value : data[i] });
+      } 
+
+      autocomplete({
+        input: inputField,
+        //minLength: 3,
+        onSelect: function(item) {
+          let str = ""
+          let lastIndex = inputField.value.lastIndexOf(" ");
+          str = inputField.value.substring(0, lastIndex);
+
+          inputField.value = `${str}${(str.length > 0 ? " " : "")}${item.label}`;
+        },
+        render: function(item, value) {
+          const itemElement = document.createElement("div");
+
+          let emojiElement = item.label
+          emojiElement = emoji.replace_emoticons_with_colons(emojiElement);
+          emojiElement = emoji.replace_colons(emojiElement);
+
+          arrayForEach.call(value.match(/([^ ]+)/g), word => {
+            value = word
+          });
+
+          value = value.match(/:([^:]+):?/)[1];
+          const regex = new RegExp(value, 'gi');
+          const inner = `${emojiElement}&nbsp;${item.label.replace(regex, match => { return `<mark>${match}</mark>` })}`;
+          itemElement.innerHTML = inner;
+
+          return itemElement;
+        },
+        fetch: function(text, update) {
+          let lastWord = ""
+          arrayForEach.call(text.match(/([^ ]+)/g), word => {
+            lastWord = word
+          });
+
+          if(lastWord.length < 4) {
+            return;
+          }
+
+          if(lastWord.substring(0, 1) !== ":") {
+            return;
+          }
+
+          const match = lastWord.toLowerCase();
+          update(emojis.filter((n) => { return n.label.toLowerCase().indexOf(match) !== -1; }));
+        },
+        customize: function(input, inputRect, container, maxHeight) {
+          container.style.top = "";
+          container.style.bottom = (window.innerHeight - inputRect.bottom + input.offsetHeight) + "px";
+          container.style.maxHeight = "6em";
+        }
+      });
     });
 
     // callback to Lua, chatbox has been initialized

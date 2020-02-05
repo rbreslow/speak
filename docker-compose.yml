@@ -4,6 +4,7 @@ services:
     image: quay.io/rbreslow/garrysmodds:slim
     volumes:
       - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
+      - ./src/darkrp:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/gamemodes/darkrp
     tty: true
     ports:
       - "27015:27015"
@@ -12,7 +13,7 @@ services:
       "-game garrysmod",
       "-maxplayers 16",
       "+gamemode sandbox",
-      "map gm_contruct"
+      "+map rp_littletown"
     ]
 
   app:
