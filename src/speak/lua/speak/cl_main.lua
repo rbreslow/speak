@@ -75,26 +75,8 @@ speak.prefs:DefineBoolean("avatars_enabled", false, function(value)
   ))
 end)
 
-speak.playerModelCache = {}
 speak.prefs:DefineBoolean("avatars_type", false, function(value)
   speak.avatarSheet = value and ModelSheet() or AvatarSheet()
-
-  if value then
-    hook.Add("Think", "speak.Think", function()
-      for _,player in pairs(player.GetAll()) do
-        local id = player:UserID()
-        local model = player:GetModel()
-
-        if speak.playerModelCache[id] ~= model then
-          speak.UpdateAvatars()
-        end
-
-        speak.playerModelCache[id] = model
-      end
-    end)
-  else
-    hook.Remove("Think", "speak.Think")
-  end
 
   -- AvatarSheet is initialized before InitPostEntity
   if(#player.GetAll() > 0) then
@@ -296,7 +278,7 @@ function speak.ParseChatText(...)
           local mention = string.sub(element, iStart, iEnd)
           local after = string.sub(element, iEnd + 1, #element)
           
-          table.Add(message, speak.ParseChatText(before, {mentionId = v:SteamID64(), mentionText = mention}, after))
+          table.Add(message, speak.ParseChatText(before, {mentionId = v:SteamID64() or "", mentionText = mention}, after))
           doTokenize = false
         end
       end
@@ -375,71 +357,80 @@ hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
   end
 end)
 
+local function initialize()
+  include("speak/vgui/speak_radiobutton.lua")
+  include("speak/vgui/speak_chatbox.lua")
+  include("speak/vgui/speak_settings.lua")
+  
+  -- initialize the main chat frame
+  speak.view = vgui.Create("speak.Chatbox")
+  speak.settings = vgui.Create("speak.Settings")
+  
+  concommand.Add("speak_settings", function()
+    speak.settings:SetVisible(true)
+    speak.settings:MakePopup()
+    speak.settings:AlphaTo(255, 0.25, 0, function() end)
+    -- or else the chatbox is going to consume clicks
+    speak.settings:SetFocusTopLevel(true)
+  end)
+  
+  --[[ Clockwork Compatability ]]
+  if Clockwork then
+    include("speak/compatability/clockwork_compat.lua")
+  end
+  
+  --[[ DarkRP Compatability ]]
+  if DarkRP then
+    include("speak/compatability/darkrp_compat.lua")
+  end
+end
+
 -- autorefresh
 if speak.view then
   speak.view:Remove()
-  speak.view = vgui.Create("speak.Chatbox")
+  speak.settings:Remove()
+  initialize()
 else
-  hook.Add("Initialize", "Initialize", function()
-    include("speak/vgui/speak_radiobutton.lua")
-    include("speak/vgui/speak_chatbox.lua")
-    include("speak/vgui/speak_settings.lua")
-    
-    -- initialize the main chat frame
-    speak.view = vgui.Create("speak.Chatbox")
-    speak.settings = vgui.Create("speak.Settings")
-    
-    concommand.Add("speak_settings", function()
-      speak.settings:SetVisible(true)
-      speak.settings:MakePopup()
-      speak.settings:AlphaTo(255, 0.25, 0, function() end)
-      -- or else the chatbox is going to consume clicks
-      speak.settings:SetFocusTopLevel(true)
-    end)
-    
-    --[[ Clockwork Compatability ]]
-    if Clockwork then
-      include("speak/compatability/clockwork_compat.lua")
-    end
-    
-    --[[ DarkRP Compatability ]]
-    if DarkRP then
-      include("speak/compatability/darkrp_compat.lua")
-    end
-    
-    -- fill in emoji/emoticon autocompletion array
-    speak.emojo = {}
-    
-    for k,_ in pairs(Emoticons.list) do
-      speak.emojo[#speak.emojo + 1] = k
-    end
-
-    for _,v in pairs(speak.emoji) do
-      speak.emojo[#speak.emojo + 1] = v
-    end
-    
-    table.sort(speak.emojo)
-  end)
+  hook.Add("Initialize", "speak.Initialize", initialize)
 end
 
 -- fired when the DHTML view has initialized
 hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
   -- update DHTML view's configuration to match our saved preferences
   speak.prefs:FireAllCallbacks()
-  
-  gameevent.Listen("player_spawn")
-  hook.Add("player_spawn", "speak.player_spawn", function()
-    if speak and speak.avatarSheet then
-      speak.UpdateAvatars()
-    end
-  end)
 
-  hook.Add("InitPostEntity", "speak.InitPostEntity", function()
-    if speak and speak.avatarSheet then
+  local playerModelCache = {}
+  local cachedPlayerCount = 0
+  hook.Add("Think", "speak.Think", function()
+    local players = player.GetAll()
+    local currentPlayerCount = #players
+    local needToUpdateAvatars = false
+  
+    if currentPlayerCount ~= cachedPlayerCount then
+      speak.view:RefreshAutocomplete()
+      cachedPlayerCount = currentPlayerCount
+      needToUpdateAvatars = true
+    end
+  
+    if not needToUpdateAvatars and speak.prefs:Get("avatars_type") then
+      for _,player in pairs(players) do
+        local id = player:UserID()
+        local model = player:GetModel()
+  
+        if playerModelCache[id] ~= model then
+          needToUpdateAvatars = true
+        end
+  
+        playerModelCache[id] = model
+      end
+    end
+  
+    if needToUpdateAvatars then
       speak.UpdateAvatars()
     end
   end)
   
+
   hook.Add("HUDPaint", "speak.HUDPaint", function()
     -- paint the chatbox as a normal HUD element like old chat
     speak.view:PaintManual()
@@ -467,49 +458,6 @@ hook.Add("OnPlayerChat", "speak.OnPlayerChat", function(player, text)
     notification.AddLegacy("from " .. player:Nick() .. ": " .. text, NOTIFY_GENERIC, speak.prefs:Get("notification_duration"))
     if speak.notificationSounds[speak.prefs:Get("notification_sound")] then
       surface.PlaySound("speak/" .. speak.notificationSounds[speak.prefs:Get("notification_sound")] .. ".mp3")
-    end
-  end
-end)
-
--- tab completion
-hook.Add("OnChatTab", "speak.OnChatTab", function(str)
-  str = string.TrimRight(str)
-  
-  local lastWord
-  for word in string.gmatch( str, "[^ ]+" ) do
-    lastWord = word
-  end
-  
-  if lastWord ~= nil then
-    if speak.lastEmojo ~= nil and speak.lastEmojo >= #speak.emojo then
-      speak.lastEmojo = speak.lastEmojo - 1
-    end
-    
-    if speak.lastEmojo then
-      local k = speak.emojo[speak.lastEmojo + 1]
-      str = string.sub(str, 1, (string.len(lastWord) * -1) - 1)
-      str = str .. k
-      speak.lastEmojo = speak.lastEmojo + 1
-      return str
-    end
-    
-    for _,v in pairs(player.GetAll()) do
-      local nickname = "@" .. v:Nick()
-      
-      if (string.len(lastWord) < string.len(nickname) and string.find(string.lower(nickname), string.lower(lastWord), 0, true) == 1) then
-        str = string.sub(str, 1, (string.len(lastWord) * -1) - 1)
-        str = str .. nickname .. ": "
-        return str
-      end
-    end
-    
-    for i=1,#speak.emojo do
-      if (string.len(lastWord) < string.len(speak.emojo[i]) and string.find(string.lower(speak.emojo[i]), string.lower(lastWord), 0, true) == 1) then
-        str = string.sub(str, 1, (string.len(lastWord) * -1) - 1)
-        str = str .. speak.emojo[i]
-        speak.lastEmojo = i
-        return str
-      end
     end
   end
 end)

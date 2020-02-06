@@ -49,16 +49,33 @@ function PANEL:Init()
     gui.OpenURL(str)
   end)
 
-  self.html:AddFunction("speak", "ClearEmojo", function()
-    speak.lastEmojo = nil
-  end)
-
   self.html:AddFunction("speak", "Close", function()
     chat.Close()
   end)
 
   self.html:AddFunction("speak", "MaxLengthHit", function()
     surface.PlaySound("Resource/warning.wav")
+  end)
+
+  self.html:AddFunction("speak", "GetAutocompleteData", function()
+    -- fill in emoji/emoticon autocompletion array
+    local data = {}
+
+    for _,emote in pairs(Emoticons.list) do
+      table.insert(data, {label = emote.code, value = emote.url})
+      -- emotes override emoji
+      table.RemoveByValue(speak.emoji, emote.code)
+    end
+
+    for _,emojiName in pairs(speak.emoji) do
+      table.insert(data, {label = emojiName, value = ""})
+    end
+
+    for _,player in pairs(player.GetAll()) do
+      table.insert(data, {label = string.format("@%s", player:Nick()), value = CreateSpeakAvatar(player)})
+    end
+
+    return data
   end)
 
   self:Refresh()
@@ -92,6 +109,10 @@ end
 
 function PANEL:SetRawProperty(property, value)
   self.html:RunJavascript(string.format("speakJS.default.%s = %s;", property, value))
+end
+
+function PANEL:RefreshAutocomplete()
+  self.html:RunJavascript("speakJS.default.refreshAutocomplete();")
 end
 
 -- http://lua-users.org/wiki/BaseSixtyFour

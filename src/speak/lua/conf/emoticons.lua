@@ -236,7 +236,7 @@ Emoticons:Define(":drac:", "http://sae.tweek.us/static/images/emoticons/emot-dra
 Emoticons:Define(":wooper:", "http://sae.tweek.us/static/images/emoticons/emot-wooper.gif")
 Emoticons:Define(":am:", "http://sae.tweek.us/static/images/emoticons/emot-am.gif")
 Emoticons:Define(":wmwink:", "http://sae.tweek.us/static/images/emoticons/emot-wmwink.png")
-Emoticons:Define(":wink:", "http://sae.tweek.us/static/images/emoticons/emot-wink.gif")
+-- Emoticons:Define(":wink:", "http://sae.tweek.us/static/images/emoticons/emot-wink.gif")
 Emoticons:Define(":razz:", "http://sae.tweek.us/static/images/emoticons/emot-razz.gif")
 Emoticons:Define(":regd06:", "http://sae.tweek.us/static/images/emoticons/emot-06.gif")
 Emoticons:Define(":(", "http://sae.tweek.us/static/images/emoticons/frown.gif")

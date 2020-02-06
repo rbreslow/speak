@@ -1,0 +1,53 @@
+// otherwise, the base .awesomplete class will override property of speak input
+// box
+.awesomplete {
+  display: flex;
+}
+
+.awesomplete > ul {
+  border-radius: 0.3em;
+  margin: 0.2em 0 0;
+  background: hsla(0, 0, 18%, 1);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0.05em 0.2em 0.6em rgba(0, 0, 0, 0.2);
+  text-shadow: none;
+  // support displaying above input field
+  max-height: 12em;
+  overflow-y: scroll;
+  // try to fix the shit
+  display: inline-block;
+  min-width: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+}
+
+.awesomplete > ul[hidden],
+.awesomplete > ul:empty {
+  opacity: 0;
+  display: block;
+}
+
+.awesomplete > ul > li {
+  position: relative;
+  padding: 0.2em 0.5em;
+  cursor: pointer;
+  color: white;
+}
+
+.awesomplete > ul > li:hover {
+  background: hsla(0, 0, 28%, 1);
+  color: white;
+}
+
+.awesomplete > ul > li[aria-selected="true"] {
+  background: hsla(0, 0, 28%, 1);
+  color: white;
+}
+
+.awesomplete mark {
+  background: hsla(60, 100%, 50%, 0.2);
+  color: white;
+}
