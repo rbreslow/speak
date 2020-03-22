@@ -77,11 +77,6 @@ end)
 
 speak.prefs:DefineBoolean("avatars_type", false, function(value)
   speak.avatarSheet = value and ModelSheet() or AvatarSheet()
-
-  -- AvatarSheet is initialized before InitPostEntity
-  if(#player.GetAll() > 0) then
-    speak.UpdateAvatars()
-  end
 end)
 
 -- [[ font preferences ]]
