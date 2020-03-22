@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+
+echo "Building static asset bundle"
+GIT_COMMIT="${GIT_COMMIT}" docker-compose \
+    run --rm --no-deps app \
+    yarn run build
+
+echo "Encoding static asset bundle for Garry's Mod"
+cp "${DIR}/../src/speak/lua/speak/cl_theme.lua.tmpl" "${DIR}/../src/speak/lua/speak/cl_theme.lua"
+printf "\nspeak.encodedTheme = [[%s]]\nif speak.view then speak.view:Refresh() end" "$(base64 -i ./src/app/dist/index.html)" >>"${DIR}/../src/speak/lua/speak/cl_theme.lua"

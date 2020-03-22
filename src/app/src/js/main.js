@@ -1,6 +1,9 @@
 import EmojiConvertor from 'emoji-js';
 import 'autolink-js';
 
+import Awesomplete from 'awesomplete';
+import 'awesomplete/awesomplete.base.css';
+
 import '../sass/main.scss';
 
 const emoji = new EmojiConvertor();
@@ -126,19 +129,25 @@ class ChatboxState {
 
       this.historyIndex = -1;
       inputField.value = '';
+
+      this.awesomplete.close();
     }));
 
     inputField.addEventListener('keydown', ((e) => {
       if (e.keyCode === 9) {
-        speak.PressTab(inputField.value, (str) => {
-          inputField.value = str;
-        });
-        e.preventDefault();
-      } else {
-        speak.ClearEmojo();
+        if (!this.awesomplete.isOpened) {
+          speak.PressTab(inputField.value, (str) => {
+            inputField.value = str;
+          });
+          e.preventDefault();
+        } else if (this.awesomplete.selected) {
+          this.awesomplete.select(undefined, undefined, e);
+          e.preventDefault();
+        }
       }
 
-      if (e.keyCode === 38) {
+      // up arrow
+      if (e.keyCode === 38 && !this.awesomplete.isOpened) {
         if (this.history[this.historyIndex + 1] !== undefined) {
           this.historyIndex += 1;
         }
@@ -147,7 +156,8 @@ class ChatboxState {
           || inputField.value;
         setCaretPosition(inputField, inputField.value.length);
         e.preventDefault();
-      } else if (e.keyCode === 40) {
+        // down arrow
+      } else if (e.keyCode === 40 && !this.awesomplete.isOpened) {
         if (this.history[this.historyIndex - 1] !== undefined) {
           this.historyIndex -= 1;
           inputField.value = this.history[this.historyIndex];
@@ -175,12 +185,116 @@ class ChatboxState {
     // chatbox has been resized
     window.addEventListener('resize', () => {
       this.scroll(true);
+      this.resetAutocompletePosition();
+    });
+
+    this.awesomplete = new Awesomplete(inputField, {
+      autoFirst: true,
+      data: (item) => ({ label: item.label, value: item.value }),
+      filter: (item, input) => {
+        // operate on the last word
+        const [, word] = input.match(/[^ ]*(@[^ ]+)$/i) || input.match(/[^ ]*(:[^ ]+)$/i) || [];
+
+        if (word) {
+          if (word.startsWith(':') && item.label.startsWith(':')) {
+            // hack to require at least 2 characters. really this should be
+            // overriden at the dependency level:
+            // https://github.com/LeaVerou/awesomplete/blob/2bdab45fe87cc3f9ebf3de63247b5e2f40cf2ea1/awesomplete.js#L303
+            if (word.length < 3) {
+              return false;
+            }
+            return new RegExp(Awesomplete.$.regExpEscape(word), 'gi').test(item.label);
+          } if (word.startsWith('@') && item.label.startsWith('@')) {
+            return new RegExp(Awesomplete.$.regExpEscape(word), 'gi').test(item.label);
+          }
+          return false;
+        }
+        return false;
+      },
+      item: (item, input, itemId) => {
+        // operate on the last word
+        let [, word] = input.match(/[^ ]*(@[^ ]+)$/i) || input.match(/[^ ]*(:[^ ]+)$/i) || [];
+
+        // yes, using avatar.outerHTML is ugly, but i don't want to spend
+        // another year on this
+        let iconElement;
+        if (typeof (item.value) === 'object' && isAvatar(item.value)) {
+          const avatar = document.createElement('span');
+
+          avatar.classList.toggle('avatar');
+
+          avatar.style.background = `url(data:image/png;base64,${this.avatarSheet}) ${-item.value.sheetX * 2}em ${-item.value.sheetY * 2}em`;
+          avatar.style.backgroundSize = '24em 12em';
+
+          iconElement = avatar.outerHTML;
+        } else if (item.value.length > 0) {
+          const emoticon = document.createElement('img');
+
+          emoticon.src = item.value;
+          emoticon.classList.toggle('emoji');
+          emoticon.setAttribute('alt', item.label);
+
+          iconElement = emoticon.outerHTML;
+        } else {
+          iconElement = item.label;
+          iconElement = emoji.replace_emoticons_with_colons(iconElement);
+          iconElement = emoji.replace_colons(iconElement);
+        }
+
+        let suggestionLabel;
+        switch (word.charAt(0)) {
+          case ':':
+            [, word] = word.match(/:([^:]+):?/i);
+            suggestionLabel = item.label;
+            break;
+          case '@':
+            [, word] = word.match(/@([^@ ]+)/i);
+            // we don't want to show the @ in suggestions for players
+            suggestionLabel = item.label.substring(1);
+            break;
+          default:
+            suggestionLabel = '';
+        }
+
+        const regex = new RegExp(Awesomplete.$.regExpEscape(word), 'gi');
+        const inner = `${iconElement}&nbsp;${suggestionLabel.replace(regex, (match) => `<mark>${match}</mark>`)}`;
+
+        return Awesomplete.$.create('li', {
+          innerHTML: inner,
+          role: 'option',
+          'aria-selected': 'false',
+          id: `awesomplete_list_${Awesomplete.count}_item_${itemId}`,
+        });
+      },
+      replace: (item) => {
+        const [, word] = inputField.value.match(/[^ ]*(@[^ ]+)$/i) || inputField.value.match(/[^ ]*(:[^ ]+)$/i) || [];
+
+        let str = '';
+        const lastIndex = inputField.value.lastIndexOf(word);
+        str = inputField.value.substring(0, lastIndex);
+
+        inputField.value = `${str}${item.label}`;
+      },
     });
 
     // callback to Lua, chatbox has been initialized
     if (typeof speak !== 'undefined' && has.call(speak, 'ChatInitialized')) {
       speak.ChatInitialized();
     }
+  }
+
+  resetAutocompletePosition() {
+    const inputRect = inputField.getBoundingClientRect();
+    this.awesomplete.ul.style.top = '';
+    // 3px is 6px padding / 2
+    this.awesomplete.ul.style.bottom = `${window.innerHeight - inputRect.bottom + inputField.offsetHeight - 3}px`;
+  }
+
+  refreshAutocomplete() {
+    speak.GetAutocompleteData((data) => {
+      this.awesomplete.list = data;
+      this.awesomplete.evaluate();
+    });
   }
 
   setAvatarEnabled(avatarEnabled) {
@@ -249,6 +363,8 @@ class ChatboxState {
     this.isTeamChat = isTeamChat;
 
     inputField.placeholder = isTeamChat ? sayTeam : say;
+
+    this.resetAutocompletePosition();
 
     messages.classList.toggle('messages--open');
     footer.classList.toggle('footer--open');
@@ -357,7 +473,10 @@ class ChatboxState {
 
           anchor.textContent = currentObject.mentionText;
 
-          anchor.onclick = () => speak.OpenUrl(`https://steamcommunity.com/profiles/${currentObject.mentionId}`);
+          // Bots / single players don't have profiles
+          if (currentObject.mentionId.length > 0) {
+            anchor.onclick = () => speak.OpenUrl(`https://steamcommunity.com/profiles/${currentObject.mentionId}`);
+          }
 
           message.appendChild(anchor);
         }
@@ -436,7 +555,7 @@ class ChatboxState {
 
     // scale the lifetime of the animation to the size of the chatbox so the
     // motion always is fixed. the value here is arbitrary, based on what
-    // "looks good"
+    // 'looks good'
     const lifeTime = messages.clientHeight * 1;
 
     const startVal = messages.scrollTop;

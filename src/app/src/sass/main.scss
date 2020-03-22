@@ -1,6 +1,7 @@
 @import "fonts/emoji";
 @import "fonts/inter";
 @import "fonts/roboto";
+@import "awesomplete.theme";
 $fast-transition-time: 0.25s;
 $slow-transition-time: 1.5s;
 $easeInOutSine: cubic-bezier(0.445, 0.05, 0.55, 0.95);
@@ -33,6 +34,7 @@ body {
   // FIXME: the presense of the scrollbar changes the appearance of a very long,
   // unwrappable string in the chatbox
   width: 7px;
+  padding: 0;
   // make the scrollbar shrink vertically
   margin: 8px 0 8px 0;
   -webkit-appearance: none;
@@ -84,7 +86,7 @@ a:hover {
 .messages {
   height: 100%;
   margin: 0 0 6px 0;
-  padding: 8px 0 8px 4px;
+  padding: 8px 7px 8px 4px;
   // tells the browser to account for any border and padding in the values you
   // specify for an element's width and height.
   box-sizing: border-box;
@@ -117,7 +119,7 @@ a:hover {
   &--open {
     overflow-y: scroll;
     padding: 8px 0 8px 4px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
 
     .messages__message {
       opacity: 1;
@@ -153,7 +155,7 @@ a:hover {
   // transition by opacity to hide child elements
   opacity: 0;
   transition: opacity $fast-transition-time $easeInOutSine;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   flex-shrink: 0;
 
