@@ -1,4 +1,4 @@
-Tags = {}
+local Tags = {}
 Tags.ranks = {}
 Tags.clients = {}
 
@@ -47,3 +47,5 @@ function Tags:GetFromSteamID64(steamid64)
         return Tags.clients[steamid64]
     end
 end
+
+return Tags

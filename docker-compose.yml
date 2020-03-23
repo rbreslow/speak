@@ -12,6 +12,7 @@ services:
       "-game garrysmod",
       "-maxplayers 16",
       "+gamemode sandbox",
+      "+sv_password secret",
       "map gm_contruct"
     ]
 
@@ -27,3 +28,12 @@ services:
     volumes:
       - ./:/usr/local/src
     working_dir: /usr/local/src
+
+  gmad:
+    image: quay.io/rbreslow/garrysmodds:slim
+    environment:
+      - LD_LIBRARY_PATH=./bin
+    volumes:
+      - ./dist:/usr/local/src/out
+      - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
+    entrypoint: ./bin/gmad_linux

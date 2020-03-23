@@ -1,10 +1,6 @@
 util.AddNetworkString('tags.update')
 
-if Tags then
-  Tags:UpdateClients()
-end
-
-Tags = {}
+local Tags = {}
 Tags.ranks = {}
 Tags.clients = {}
 
@@ -108,3 +104,5 @@ function Tags:UpdateClients()
   net.WriteTable(obj)
   net.Broadcast()
 end
+
+return Tags

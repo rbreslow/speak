@@ -1,4 +1,4 @@
-ModelSheet = {}
+local ModelSheet = {}
 ModelSheet.prototype = {}
 ModelSheet.__index = ModelSheet.prototype
 
@@ -123,3 +123,5 @@ function ModelSheet.prototype:Update(cb)
     
     return self.players[player:UserID()].x, self.players[player:UserID()].y
   end
+
+return ModelSheet

@@ -1,0 +1,9 @@
+{
+    "title": "Speak",
+    "type": "ServerContent",
+    "tags": [],
+    "ignore": [
+        "lua/*",
+        "icon.jpg"
+    ]
+}

@@ -1,23 +1,43 @@
 if SERVER then
-    -- libraries
-    include("lib/preferences.lua/preferences.lua")
-    AddCSLuaFile("lib/preferences.lua/preferences.lua")
+    AddCSLuaFile "speak/sh_main.lua"
+end
 
-    include("lib/i18n.lua/i18n.lua")
+include "speak/sh_main.lua"
 
-    -- speak
-    AddCSLuaFile("speak/cl_main.lua")
-    include("speak/sv_main.lua")
+if SERVER then
+    AddCSLuaFile "speak/gen/bundle.lua"
+    AddCSLuaFile "speak/gen/emoji_data.lua"
 
-    -- conf
-    include("conf/tags.lua")
+    AddCSLuaFile "speak/lib/avatarsheet.lua"
+    AddCSLuaFile "speak/lib/i18n.lua"
+    AddCSLuaFile "speak/lib/modelsheet.lua"
+    AddCSLuaFile "speak/lib/preferences.lua"
+
+    AddCSLuaFile "speak/vendor/base64.lua"
+    AddCSLuaFile "speak/vendor/is.lua"
+    AddCSLuaFile "speak/vendor/log.lua"
+
+    AddCSLuaFile "speak/vgui/speak_chatbox.lua"
+    AddCSLuaFile "speak/vgui/speak_radiobutton.lua"
+    AddCSLuaFile "speak/vgui/speak_settings.lua"
+
+    AddCSLuaFile "speak/cl_emoticons.lua"
+    AddCSLuaFile "speak/cl_locale.lua"
+    AddCSLuaFile "speak/cl_main.lua"
+    AddCSLuaFile "speak/cl_settings.lua"
+    AddCSLuaFile "speak/cl_tags.lua"
+
+    include "speak/sv_main.lua"
+
+    if DarkRP then
+        AddCSLuaFile("speak/compat/darkrp.lua")
+    end
 end
 
 if CLIENT then
-    -- libraries
-    include("lib/preferences.lua/preferences.lua")
-    include("lib/i18n.lua/i18n.lua")
+    include "speak/cl_main.lua"
 
-    -- speak
-    include("speak/cl_main.lua")
+    if DarkRP then
+        include("speak/compat/darkrp.lua")
+    end
 end

@@ -1,4 +1,4 @@
-AvatarSheet = {}
+local AvatarSheet = {}
 AvatarSheet.prototype = {}
 AvatarSheet.__index = AvatarSheet.prototype
 
@@ -99,3 +99,5 @@ function AvatarSheet.prototype:PlayerToPos(player)
 
   return self.players[player:UserID()].x, self.players[player:UserID()].y
 end
+
+return AvatarSheet

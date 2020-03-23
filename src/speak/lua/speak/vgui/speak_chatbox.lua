@@ -1,5 +1,21 @@
 local PANEL = {}
 
+local base64 = include "speak/vendor/base64.lua"
+local emojiData = include "speak/gen/emoji_data.lua"
+
+local blur = Material("pp/blurscreen")
+local scrw = ScrW()
+local scrh = ScrH()
+
+local startTime = 0
+local lifeTime = .25
+local startVal = 0
+local endVal = 140
+local value = startVal
+
+local startedOpenAnim = false
+local startedCloseAnim = false
+
 function PANEL:Init()
   self._isOpen = false
 
@@ -61,18 +77,18 @@ function PANEL:Init()
     -- fill in emoji/emoticon autocompletion array
     local data = {}
 
-    for _,emote in pairs(Emoticons.list) do
+    for _,emote in pairs(speak.emoticons.list) do
       table.insert(data, {label = emote.code, value = emote.url})
       -- emotes override emoji
-      table.RemoveByValue(speak.emoji, emote.code)
+      table.RemoveByValue(emojiData, emote.code)
     end
 
-    for _,emojiName in pairs(speak.emoji) do
+    for _,emojiName in pairs(emojiData) do
       table.insert(data, {label = emojiName, value = ""})
     end
 
     for _,player in pairs(player.GetAll()) do
-      table.insert(data, {label = string.format("@%s", player:Nick()), value = CreateSpeakAvatar(player)})
+      table.insert(data, {label = string.format("@%s", player:Nick()), value = ChatAvatar(player)})
     end
 
     return data
@@ -87,9 +103,48 @@ function PANEL:Init()
   self:SetMouseInputEnabled(false)
 end
 
--- appearance related stuff is split out into cl_theme.lua
-PANEL.OnScreenSizeChanged = speak.backgroundOnScreenSizeChanged
-PANEL.Paint = speak.backgroundPaint
+function PANEL:OnScreenSizeChanged(_, _)
+  scrw = ScrW()
+  scrh = ScrH()
+end
+
+function PANEL:Paint(w, h)
+  if self:IsOpen() and not startedOpenAnim then
+    startedCloseAnim = false
+    startedOpenAnim = true
+    startVal = 0
+    endVal = 140
+    startTime = CurTime()
+  elseif not self:IsOpen() and not startedCloseAnim then
+    startedOpenAnim = false
+    startedCloseAnim = true
+
+    startVal = 140
+    endVal = 0
+    startTime = CurTime()
+  end
+
+  local fraction = (CurTime() - startTime) / lifeTime
+  fraction = math.Clamp(fraction, 0, 1)
+
+  value = Lerp(fraction, startVal, endVal)
+
+  if value > 0 then
+    surface.SetMaterial(blur)
+    surface.SetDrawColor(Color(255, 255, 255, 255))
+    blur:SetFloat("$blur", 1.25)
+    blur:Recompute()
+
+    render.UpdateScreenEffectTexture()
+
+    local x, y = self:ScreenToLocal(0, 0)
+
+    surface.DrawTexturedRect(x, y, scrw, scrh)
+
+    surface.SetDrawColor(Color(0, 0, 0, value))
+    surface.DrawRect(0, 0, w, h)
+  end
+end
 
 function PANEL:AppendLine(message)
   self.html:RunJavascript(string.format(
@@ -115,33 +170,9 @@ function PANEL:RefreshAutocomplete()
   self.html:RunJavascript("speakJS.default.refreshAutocomplete();")
 end
 
--- http://lua-users.org/wiki/BaseSixtyFour
-local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function b64dec(data)
-  data = string.gsub(data, '[^' .. b .. '=]', '')
-  return (data:gsub('.', function(x)
-    if (x == '=') then
-      return ''
-    end
-    local r, f = '', (b:find(x) - 1)
-    for i = 6, 1, -1 do
-      r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
-    end
-    return r
-  end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-    if (#x ~= 8) then
-      return ''
-    end
-    local c = 0
-    for i = 1, 8 do
-      c = c + (x:sub(i, i) == '1' and 2 ^ (8 - i) or 0)
-    end
-    return string.char(c)
-  end))
-end
-
 function PANEL:Refresh()
-  self.html:SetHTML(b64dec(speak.encodedTheme))
+  local bundle = include "speak/gen/bundle.lua"
+  self.html:SetHTML(base64:dec(bundle))
 end
 
 function PANEL:RequestFocus()

@@ -1,16 +1,15 @@
 speak = speak or {}
 
--- [[ classes ]]
-include("cl_avatarsheet.lua")
-include("cl_emoticons.lua")
-include("sh_globals.lua")
-include("cl_locale.lua")
-include("cl_modelsheet.lua")
-include("cl_tags.lua")
-include("cl_theme.lua")
-include("cl_emoji.lua")
+IS = include "vendor/is.lua"
+Preferences = include "lib/preferences.lua"
+AvatarSheet = include "lib/avatarsheet.lua"
+ModelSheet = include "lib/modelsheet.lua"
 
--- [[ static references ]]
+speak.logger = include "vendor/log.lua"
+speak.i18n = include "cl_locale.lua"
+speak.emoticons = include "cl_emoticons.lua"
+speak.tags = include "cl_tags.lua"
+speak.settings = include "cl_settings.lua"
 speak.prefs = Preferences("speak")
 
 -- [[ general preferences ]]
@@ -142,7 +141,7 @@ speak.notificationSounds = {
 
 -- [[ chat library overrides ]]
 function chat.AddText(...)
-  local message = speak.ParseChatText(...)
+  local message = speak:ParseChatText(...)
   
   speak.view:AppendLine(message)
   
@@ -201,7 +200,7 @@ local function tokenize(str)
   for pos1,pos2 in str:gmatch("()%:[%w_-]+%:()") do
     local emote = str:sub(pos1,pos2-1)
     
-    emote = Emoticons:Get(emote)
+    emote = speak.emoticons:Get(emote)
     
     if emote then
       local before = str:sub(lastPos,pos1-1)
@@ -223,25 +222,17 @@ local function tokenize(str)
   return tokens
 end
 
-function speak.ParseChatText(...)
+function speak:ParseChatText(...)
   local message = {}
-  
-  -- clockwork yelling support, etc
-  if Clockwork then
-    if(Clockwork.chatBox.multiplier) then
-      table.insert(message, CreateSpeakFontMultiplier(Clockwork.chatBox.multiplier))
-    end
-    Clockwork.chatBox.multiplier = nil
-  end
   
   for _, element in pairs({...}) do
     local elementType = type(element)
     
     if elementType == "Player" then
-      table.insert(message, CreateSpeakAvatar(element))
+      table.insert(message, ChatAvatar(element))
       table.insert(message, " ")
       
-      local tag = speak.ParseChatText(Tags:Get(element))
+      local tag = speak:ParseChatText(self.tags:Get(element))
       
       if speak.prefs:Get("tag_position") then
         message = table.Add(message, tag[1])
@@ -273,7 +264,7 @@ function speak.ParseChatText(...)
           local mention = string.sub(element, iStart, iEnd)
           local after = string.sub(element, iEnd + 1, #element)
           
-          table.Add(message, speak.ParseChatText(before, {mentionId = v:SteamID64() or "", mentionText = mention}, after))
+          table.Add(message, speak:ParseChatText(before, {mentionId = v:SteamID64() or "", mentionText = mention}, after))
           doTokenize = false
         end
       end
@@ -310,7 +301,7 @@ function speak.SayTeam(message)
 end
 
 function chat.Close()
-  if speak.settings:IsVisible() then
+  if speak.settingsView:IsVisible() then
     return
   end
   
@@ -352,38 +343,30 @@ hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
   end
 end)
 
-local function initialize()
-  include("speak/vgui/speak_radiobutton.lua")
-  include("speak/vgui/speak_chatbox.lua")
-  include("speak/vgui/speak_settings.lua")
-  
+
+local function initialize()  
+  include "speak/vgui/speak_chatbox.lua"
+  include "speak/vgui/speak_radiobutton.lua"
+  include "speak/vgui/speak_settings.lua"
+
   -- initialize the main chat frame
   speak.view = vgui.Create("speak.Chatbox")
-  speak.settings = vgui.Create("speak.Settings")
+  speak.settingsView = vgui.Create("speak.Settings")
   
   concommand.Add("speak_settings", function()
-    speak.settings:SetVisible(true)
-    speak.settings:MakePopup()
-    speak.settings:AlphaTo(255, 0.25, 0, function() end)
+    speak.settingsView:SetVisible(true)
+    speak.settingsView:MakePopup()
+    speak.settingsView:AlphaTo(255, 0.25, 0, function() end)
     -- or else the chatbox is going to consume clicks
-    speak.settings:SetFocusTopLevel(true)
+    speak.settingsView:SetFocusTopLevel(true)
   end)
-  
-  --[[ Clockwork Compatability ]]
-  if Clockwork then
-    include("speak/compatability/clockwork_compat.lua")
-  end
-  
-  --[[ DarkRP Compatability ]]
-  if DarkRP then
-    include("speak/compatability/darkrp_compat.lua")
-  end
 end
 
 -- autorefresh
 if speak.view then
   speak.view:Remove()
-  speak.settings:Remove()
+  speak.settingsView:Remove()
+
   initialize()
 else
   hook.Add("Initialize", "speak.Initialize", initialize)
@@ -394,20 +377,24 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
   -- update DHTML view's configuration to match our saved preferences
   speak.prefs:FireAllCallbacks()
 
+  gameevent.Listen("player_changename")
+  hook.Add("player_changename", "speak.player_changename", function(_)
+    speak.view:RefreshAutocomplete()
+  end)
+
   local playerModelCache = {}
   local cachedPlayerCount = 0
   hook.Add("Think", "speak.Think", function()
     local players = player.GetAll()
     local currentPlayerCount = #players
     local needToUpdateAvatars = false
-  
+
     if currentPlayerCount ~= cachedPlayerCount then
-      speak.view:RefreshAutocomplete()
       cachedPlayerCount = currentPlayerCount
       needToUpdateAvatars = true
     end
-  
-    if not needToUpdateAvatars and speak.prefs:Get("avatars_type") then
+
+    if not needToUpdateAvatars and currentAvatarsType then
       for _,player in pairs(players) do
         local id = player:UserID()
         local model = player:GetModel()
@@ -419,18 +406,18 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
         playerModelCache[id] = model
       end
     end
-  
+
     if needToUpdateAvatars then
       speak.UpdateAvatars()
+      speak.view:RefreshAutocomplete()
     end
   end)
-  
 
   hook.Add("HUDPaint", "speak.HUDPaint", function()
     -- paint the chatbox as a normal HUD element like old chat
     speak.view:PaintManual()
   end)
-  
+
   hook.Add("PreRender", "speak.PreRender", function()
     if not chat.IsOpen() or not gui.IsGameUIVisible() then
       return false
@@ -466,6 +453,6 @@ hook.Add("HUDShouldDraw", "speak.HUDShouldDraw", function(class)
   if class == "CHudChat" then return false end
 end)
 
-net.Receive('chat.addtext', function(_)
+net.Receive("speak.chataddtext", function(_)
   chat.AddText(unpack(net.ReadTable()))
 end)
