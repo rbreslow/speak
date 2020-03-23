@@ -15,11 +15,8 @@
    limitations under the License.
 ]]
 
-if SERVER then AddCSLuaFile('is.lua/is.lua') end
-include('is.lua/is.lua')
-
 if CLIENT then
-    Preferences = {}
+    local Preferences = {}
     Preferences.prototype = {}
     Preferences.__index = Preferences.prototype
 
@@ -311,12 +308,14 @@ if CLIENT then
         -- Alert
         hook.Run('preferences.policyupdate')
     end)
+
+    return Preferences
 end
 
 if SERVER then
     util.AddNetworkString('preferences.enforcepolicy')
 
-    Policy = {}
+    local Policy = {}
     Policy.prototype = {}
     Policy.__index = Policy.prototype
 
@@ -394,4 +393,6 @@ if SERVER then
         net.WriteTable(obj)
         net.Broadcast()
     end
+
+    return Policy
 end

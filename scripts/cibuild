@@ -16,17 +16,15 @@ Build addon for distribution.
 }
 
 function update_fastdl() {
-    echo "Updating FastDL"
-
     pushd "${DIR}/../src/speak"
 
-    resource_file="lua/speak/sv_resources.lua"
+    resource_file="lua/speak/gen/resources.lua"
     fastdl_root="../../dist/fastdl"
     prefixes=(resource sound)
 
     # Wipe existing resource file
     mkdir -p "${resource_file%/*}"
-    >"${resource_file}"
+    printf "return {" >"${resource_file}"
 
     for prefix in "${prefixes[@]}"; do
         find . -type d -name "${prefix}" | while read dir; do
@@ -37,7 +35,7 @@ function update_fastdl() {
                 # Append new resource.AddFile( string path ) statement
                 echo "Processing ${resource}"
                 if [[ $resource != maps/* ]]; then
-                    printf "resource.AddFile(\"%s\")\n" "${resource}" >>"${resource_file}"
+                    printf "\"%s\"," "${resource}" >>"${resource_file}"
                 fi
 
                 # Ensure FastDL directory structure exists
@@ -57,6 +55,8 @@ function update_fastdl() {
             done
         done
     done
+
+    printf "}" >>"${resource_file}"
 
     popd
 }
@@ -83,15 +83,18 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             run --rm --no-deps app \
             yarn run build
 
+        mkdir "${DIR}/../src/speak/lua/speak/gen"
+
         echo "Encoding static asset bundle for Garry's Mod"
-        cp "${DIR}/../src/speak/lua/speak/cl_theme.lua.tmpl" "${DIR}/../src/speak/lua/speak/cl_theme.lua"
-        printf "\nspeak.encodedTheme = [[%s]]\nif speak.view then speak.view:Refresh() end" "$(base64 -i ./src/app/dist/index.html)" >>"${DIR}/../src/speak/lua/speak/cl_theme.lua"
+        printf "return \"%s\"\n" "$(base64 -i ./src/app/dist/index.html)" \
+            >"${DIR}/../src/speak/lua/speak/gen/bundle.lua"
 
         echo "Building emoji autocompletion data"
-        cp "${DIR}/../src/speak/lua/speak/cl_emoji.lua.tmpl" "${DIR}/../src/speak/lua/speak/cl_emoji.lua"
         emoji="$(jq -r '. |  map("\":" + .short_name + ":\"") | join(",")' "${DIR}/../src/app/node_modules/emoji-datasource/emoji.json")"
-        printf "speak.emoji = {%s}\n" "${emoji}" >>"${DIR}/../src/speak/lua/speak/cl_emoji.lua"
+        printf "return {%s}\n" "${emoji}" \
+            >"${DIR}/../src/speak/lua/speak/gen/emoji_data.lua"
 
+        echo "Building FastDL"
         update_fastdl
 
         echo "Building Workshop GMA"

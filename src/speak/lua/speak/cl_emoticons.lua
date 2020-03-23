@@ -1,4 +1,4 @@
-Emoticons = {}
+local Emoticons = {}
 Emoticons.list = {}
 
 --[[ PUBLIC: ]]
@@ -28,4 +28,4 @@ function Emoticons:Get(code)
   end
 end
 
-include("conf/emoticons.lua")
+return Emoticons

@@ -12,6 +12,7 @@ services:
       "-game garrysmod",
       "-maxplayers 16",
       "+gamemode sandbox",
+      "+sv_password secret",
       "map gm_contruct"
     ]
 

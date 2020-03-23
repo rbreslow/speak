@@ -5,9 +5,7 @@ yarn-error.log*
 node_modules/
 
 # build output
-cl_theme.lua
-sv_resources.lua
-cl_emoji.lua
-dist
+dist/
 *.bz2
 src/css
+gen/

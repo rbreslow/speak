@@ -1,4 +1,4 @@
-local function AddToChat(bits)
+local function AddToChat(_)
   local col1 = Color(net.ReadUInt(8), net.ReadUInt(8), net.ReadUInt(8))
   
   local prefixText = net.ReadString()
@@ -21,7 +21,7 @@ local function AddToChat(bits)
     
     if shouldShow ~= true then
       if IsValid(ply) then
-        local message = {CreateSpeakAvatar(ply), " "}
+        local message = {ChatAvatar(ply), " "}
         
         local tag = speak.ParseChatText(Tags:Get(ply))
         
@@ -41,7 +41,7 @@ local function AddToChat(bits)
     end
   else
     if IsValid(ply) then
-      local message = {CreateSpeakAvatar(ply), " "}
+      local message = {ChatAvatar(ply), " "}
       
       local tag = speak.ParseChatText(Tags:Get(ply))
       
@@ -60,13 +60,5 @@ local function AddToChat(bits)
   end
   chat.PlaySound()
 end
-net.Receive("DarkRP_Chat", AddToChat)
 
-hook.Add("DarkRPVarChanged", "speak.DarkRPVarChanged", function(ply, var, old, new)
-  if var == "job" then
-    -- Put a delay... model hasn't changed yet on the server. Closest hook to when it does change.
-    timer.Simple(1, function()
-      speak.UpdateAvatars()
-    end)
-  end
-end)
+net.Receive("DarkRP_Chat", AddToChat)

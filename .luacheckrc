@@ -3,7 +3,7 @@
 
 std = "luajit+garrysmod+speak"
 include_files = {"src/speak/**/*.lua", "*.rockspec", "*.luacheckrc"}
-exclude_files = {"src/speak/lua/lib/*", "src/speak/lua/speak/compatability/*"}
+exclude_files = {"src/speak/lua/speak/compat/*"}
 
 -- Problems to ignore
 ignore = {
@@ -3666,13 +3666,11 @@ stds.speak = {}
 stds.speak.globals = {
   -- Speak
   "speak",
-  "Tags",
-  "CreateSpeakAvatar",
-  "CreateSpeakImage",
-  "CreateSpeakFontMultiplier",
+  "ChatAvatar",
+  "ChatImage",
+  "ChatFontMultiplier",
   "ModelSheet",
   "AvatarSheet",
-  "Emoticons",
 
   -- Compatability
   "Clockwork",

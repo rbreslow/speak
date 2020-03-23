@@ -13,7 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-IS = {}
+local IS = {}
 
 --- Throw an error caused by invalid arguments.
 -- @param count The index of the invalid argument.
@@ -140,3 +140,5 @@ function IS.is_all_values(tbl, typename)
 
     return true
 end
+
+return IS

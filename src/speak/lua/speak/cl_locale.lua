@@ -1,18 +1,20 @@
+I18n = include "lib/i18n.lua"
+
 local function getGameLocale()
   return GetConVar("gmod_language"):GetString():sub(1, 2)
 end
 
-speak.i18n = I18n(getGameLocale())
+local i18n = I18n(getGameLocale())
 
 cvars.AddChangeCallback("gmod_language", function(_, _, _)
-  speak.i18n:SetLocale(getGameLocale())
+  i18n:SetLocale(getGameLocale())
 
   -- refresh stale settings strings
-  speak.settings:Remove()
-  speak.settings = vgui.Create("speak.Settings")
+  speak.settingsView:Remove()
+  speak.settingsView = vgui.Create("speak.Settings")
 end)
 
-speak.i18n:Load({
+i18n:Load({
   en = {
     SAY = "SAY",
     SAY_TEAM = "SAY TEAM",
@@ -166,3 +168,5 @@ speak.i18n:Load({
     OPACITY = "Opacité",
   }
 })
+
+return i18n
