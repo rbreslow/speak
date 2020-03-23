@@ -93,5 +93,17 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         printf "speak.emoji = {%s}\n" "${emoji}" >>"${DIR}/../src/speak/lua/speak/cl_emoji.lua"
 
         update_fastdl
+
+        echo "Building Workshop GMA"
+        docker-compose run --rm \
+            gmad create -folder garrysmod/addons/speak -out /usr/local/src/out/speak.gma
+
+        echo "Building addon for distribution"
+        mkdir -p "${DIR}/../dist/addons"
+        rsync \
+            -ar --delete \
+            --exclude="addon.json" \
+            --exclude="icon.jpg" \
+            "${DIR}/../src/speak" "${DIR}/../dist/addons"
     fi
 fi
