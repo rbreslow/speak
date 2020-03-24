@@ -665,6 +665,11 @@ end
 
 function PANEL:OnClose()
     self:SetAlpha(0)
+
+    -- return focus to chatbox input field
+    if chat.IsOpen() then
+        speak.view:RequestFocus()
+    end
 end
 
 function PANEL:OnRemove()
