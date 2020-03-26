@@ -13,16 +13,14 @@ log.usecolor = true
 log.outfile = nil
 log.level = "trace"
 
-
 local modes = {
-  { name = "trace", color = "\27[34m", },
-  { name = "debug", color = "\27[36m", },
-  { name = "info",  color = "\27[32m", },
-  { name = "warn",  color = "\27[33m", },
-  { name = "error", color = "\27[31m", },
-  { name = "fatal", color = "\27[35m", },
-}
-
+  { name = "trace", color = "\27[34m", alt = Color(122, 166, 218) }, -- blue
+  { name = "debug", color = "\27[36m", alt = Color(112, 192, 186) }, -- cyan
+  { name = "info",  color = "\27[32m", alt = Color(185, 202, 74) }, -- green
+  { name = "warn",  color = "\27[33m", alt = Color(230, 197, 71) }, -- yellow
+  { name = "error", color = "\27[31m", alt = Color(213, 78, 83) }, -- red
+  { name = "fatal", color = "\27[35m", alt = Color(195, 151, 216) }, -- magenta
+} 
 
 local levels = {}
 for i, v in ipairs(modes) do
@@ -65,14 +63,25 @@ for i, x in ipairs(modes) do
     local info = debug.getinfo(2, "Sl")
     local lineinfo = info.short_src .. ":" .. info.currentline
 
-    -- Output to console
-    print(string.format("%s[%-6s%s]%s %s: %s",
-                        log.usecolor and x.color or "",
-                        nameupper,
-                        os.date("%H:%M:%S"),
-                        log.usecolor and "\27[0m" or "",
-                        lineinfo,
-                        msg))
+    if log.usecolor and (CLIENT or system.IsWindows()) then
+      MsgC(x.alt, 
+        string.format("[%-6s%s]", 
+                      nameupper, 
+                      os.date("%H:%M:%S")), 
+        Color(255, 255, 255), 
+        string.format(" %s: %s\n", 
+                      lineinfo, 
+                      msg))
+    else
+      -- Output to console
+      print(string.format("%s[%-6s%s]%s %s: %s",
+                          log.usecolor and x.color or "",
+                          nameupper,
+                          os.date("%H:%M:%S"),
+                          log.usecolor and "\27[0m" or "",
+                          lineinfo,
+                          msg))
+    end
 
     -- Output to log file
     if log.outfile then
