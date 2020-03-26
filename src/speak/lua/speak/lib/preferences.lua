@@ -83,7 +83,7 @@ if CLIENT then
 
     --- Fires all callbacks in defined preferences. Useful for initializing values.
     function Preferences.prototype:FireAllCallbacks()
-        for name, obj in pairs(self.prefs) do
+        for name, _ in pairs(self.prefs) do
             self:_FireCallback(name)
         end
     end
@@ -163,7 +163,7 @@ if CLIENT then
         self.prefs[name] = {type = 'string', cvar = CreateClientConVar(self:_GetFullyQualified(name), default, true, false), cb = cb}
 
         cvars.RemoveChangeCallback(self:_GetFullyQualified(name), 'a')
-        cvars.AddChangeCallback(self:_GetFullyQualified(name), function(_, oldValue, newValue)
+        cvars.AddChangeCallback(self:_GetFullyQualified(name), function(_, _, _)
             if not self:IsEnforced(name) then
                 self.prefs[name].cb(self.prefs[name].cvar:GetString())
             end
