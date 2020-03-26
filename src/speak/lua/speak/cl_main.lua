@@ -416,6 +416,10 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
   hook.Add("HUDPaint", "speak.HUDPaint", function()
     -- paint the chatbox as a normal HUD element like old chat
     speak.view:PaintManual()
+
+    if speak.avatarSheet ~= nil then
+      speak.avatarSheet:Render()
+    end
   end)
 
   hook.Add("PreRender", "speak.PreRender", function()
