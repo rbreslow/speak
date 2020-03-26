@@ -223,7 +223,7 @@ class ChatboxState {
 
           avatar.classList.toggle('avatar');
 
-          avatar.style.background = `url(data:image/png;base64,${this.avatarSheet}) ${-item.value.sheetX * 2}em ${-item.value.sheetY * 2}em`;
+          avatar.style.background = `url(data:image/png;base64,${this.avatarSheet}) ${-item.value.sheetX * 1.5}em ${-item.value.sheetY * 1.5}em`;
           avatar.style.backgroundSize = '24em 12em';
 
           iconElement = avatar.outerHTML;
@@ -462,7 +462,7 @@ class ChatboxState {
             avatar.style.display = 'none';
           }
 
-          avatar.style.background = `url(data:image/png;base64,${this.avatarSheet}) ${-currentObject.sheetX * 2}em ${-currentObject.sheetY * 2}em`;
+          avatar.style.background = `url(data:image/png;base64,${this.avatarSheet}) ${-currentObject.sheetX * 1.5}em ${-currentObject.sheetY * 1.5}em`;
           avatar.style.backgroundSize = '24em 12em';
 
           avatar.onclick = () => speak.OpenUrl(`https://steamcommunity.com/profiles/${currentObject.steamId}`);
