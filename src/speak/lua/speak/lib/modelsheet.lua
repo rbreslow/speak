@@ -12,21 +12,15 @@ setmetatable(ModelSheet, {
       data = '',
       expired = false
     }, self)
-    
-    hook.Add('HUDPaint', tostring(instance), function()
-      if instance.expired then
-        instance:_Render()
-        instance.expired = false
-      end
-    end)
-    
+
     return instance
   end
 })
 
---[[ PRIVATE: ]]
+--- To be called within a 2D rendering hook.
+function ModelSheet.prototype:Render()
+  if not self.expired then return end
 
-function ModelSheet.prototype:_Render()
   render.PushRenderTarget(GetRenderTarget("modelSheet", 1024, 512))
   
   render.SetWriteDepthToDestAlpha(false)
@@ -61,9 +55,9 @@ function ModelSheet.prototype:_Render()
   for i=1,#self.models do
     self.models[i]:Remove()
   end
-end
 
---[[ PUBLIC: ]]
+  self.expired = false
+end
 
 --- Update the model sheet.
 -- @param cb Callback to return base64 PNG image data to
