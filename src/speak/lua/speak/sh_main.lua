@@ -1,3 +1,12 @@
+IS = include "vendor/is.lua"
+
+speak = speak or {}
+speak.settings = include "config/sh_settings.lua"
+
+speak.logger = include "vendor/log.lua"
+speak.logger.name = "speak"
+speak.logger.level = speak.settings.LOG_LEVEL
+
 --- Creates an avatar to be used in chat.AddText()
 -- @param client The player object to use
 function ChatAvatar(client)
@@ -17,7 +26,7 @@ function ChatImage(url)
   if file.Exists('materials/' .. url, 'GAME') then
     url = 'data:image/png;base64,' .. util.Base64Encode(file.Read('materials/' .. url, 'GAME'))
   end
-  
+
   return {
     url = url
   }
@@ -30,3 +39,5 @@ function ChatFontMultiplier(multiplier)
     value = multiplier
   }
 end
+
+speak.logger.info("speak", "version:", include "gen/version.lua")

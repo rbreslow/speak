@@ -92,6 +92,9 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         printf "return {%s}\n" "${emoji}" \
             >"${DIR}/../src/speak/lua/speak/gen/emoji_data.lua"
 
+        printf "return \"%s\"\n" "$(git describe --always)" \
+            >"${DIR}/../src/speak/lua/speak/gen/version.lua"
+
         echo "Building FastDL"
         update_fastdl
 

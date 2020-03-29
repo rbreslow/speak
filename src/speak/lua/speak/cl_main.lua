@@ -1,15 +1,17 @@
-speak = speak or {}
-
-IS = include "vendor/is.lua"
 Preferences = include "lib/preferences.lua"
 AvatarSheet = include "lib/avatarsheet.lua"
 ModelSheet = include "lib/modelsheet.lua"
 
-speak.logger = include "vendor/log.lua"
+speak = speak or {}
+
 speak.i18n = include "cl_locale.lua"
+
+
 speak.emoticons = include "cl_emoticons.lua"
+include "config/cl_emoticons.lua"
+
 speak.tags = include "cl_tags.lua"
-speak.settings = include "cl_settings.lua"
+
 speak.prefs = Preferences("speak")
 
 -- [[ general preferences ]]

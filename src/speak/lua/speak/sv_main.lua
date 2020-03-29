@@ -1,11 +1,7 @@
 speak = speak or {}
 
-IS = include "vendor/is.lua"
-
-speak.logger = include "vendor/log.lua"
 speak.tags = include "sv_tags.lua"
-speak.settings = include "sv_settings.lua"
-
+include "config/sv_tags.lua"
 speak.tags:UpdateClients()
 
 include "sv_resource.lua"
