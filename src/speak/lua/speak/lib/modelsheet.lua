@@ -83,27 +83,40 @@ function ModelSheet.prototype:Update(cb)
       panel:SetAmbientLight(Color(102, 102, 102, 102))
       panel:SetPaintedManually(true)
       
-      if player:GetModel() ~= nil then
-        panel.Entity:SetModel(player:GetModel())
-        
-        local headPos = panel.Entity:GetBonePosition( panel.Entity:LookupBone( "ValveBiped.Bip01_Head1" ) )
+      local model = player:GetModel()
+      if model ~= nil then
+        panel.Entity:SetModel(model)
+        local bone = panel.Entity:LookupBone("ValveBiped.Bip01_Head1")
 
-        -- these numbers were found through guessing and testing, they look good
-        panel:SetFOV(10)
-        panel:SetCamPos(headPos - Vector(-54, 0, -12))
-        panel:SetLookAt(headPos)
+        if bone ~= nil then
+          local headPos = panel.Entity:GetBonePosition(bone)
 
-        panel.Entity:SetEyeTarget(headPos - Vector( -15, 0, 0 ) )
+          -- these numbers were found through guessing and testing, they look good
+          panel:SetFOV(10)
+          panel:SetCamPos(headPos - Vector(-54, 0, -12))
+          panel:SetLookAt(headPos)
 
-        panel.LayoutEntity = function(_, _) return end
+          panel.Entity:SetEyeTarget(headPos - Vector( -15, 0, 0 ) )
+
+          panel.LayoutEntity = function(_, _) return end
+
+          table.insert(self.models, panel)
+        else
+          panel:Remove()
+
+          local avatar = vgui.Create("AvatarImage")
+          avatar:SetPaintedManually(true)
+          avatar:SetSize(64, 64)
+          avatar:SetPos(64 * x, 64 * y)
+          avatar:SetPlayer(player, 64)
+
+          table.insert(self.models, avatar)
+        end
       end
       
       self.players[player:UserID()] = {x = x, y = y}
       
-      table.insert(self.models, panel)
-      
       x = x + 1
-      
     end
     
     self.cb = cb
