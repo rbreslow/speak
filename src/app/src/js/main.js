@@ -129,6 +129,7 @@ class ChatboxState {
 
       this.historyIndex = -1;
       inputField.value = '';
+      speak.TextChanged('');
 
       this.awesomplete.close();
     }));
