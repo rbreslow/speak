@@ -10,11 +10,11 @@ local scrh = ScrH()
 local startTime = 0
 local lifeTime = .25
 local startVal = 0
-local endVal = 140
+local endVal = 0
 local value = startVal
 
 local startedOpenAnim = false
-local startedCloseAnim = false
+local startedCloseAnim = true
 
 function PANEL:Init()
   self._isOpen = false
