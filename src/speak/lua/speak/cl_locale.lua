@@ -63,6 +63,8 @@ speak.i18n:Load({
     STROKE = "Stroke",
     BLUR = "Blur",
     OPACITY = "Opacity",
+
+    RP_TAGS = "Display tags outside of (OOC) chat"
   },
   
   sv = {

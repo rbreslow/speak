@@ -30,6 +30,7 @@ speak.prefs = Preferences("speak")
 
 -- [[ general preferences ]]
 speak.prefs:DefineBoolean("tag_position", true, function(_) end)
+speak.prefs:DefineBoolean("tag_enabled", true, function(_) end)
 
 -- [[ emoji preferences ]]
 speak.prefs:DefineNumber("emoji_pack", 1, function(value)
@@ -239,31 +240,37 @@ local function tokenize(str)
 end
 
 function speak:ParseChatText(...)
+  local varargs = {...}
+  hook.Run("SpeakPreParseChatText", varargs)
+
   local message = {}
   
-  for _, element in pairs({...}) do
+  for i = 1, #varargs do
+    local element = varargs[i]
     local elementType = type(element)
     
     if elementType == "Player" then
       table.insert(message, ChatAvatar(element))
       table.insert(message, " ")
       
-      local tag = speak:ParseChatText(self.tags:Get(element))
-      
-      if speak.prefs:Get("tag_position") then
+      local tag = self.tags:Get(element)
+      local shouldShowTag = not table.IsEmpty(tag) and speak.prefs:Get("tag_enabled") and hook.Run("SpeakShouldShowTag", varargs)
+      local tagPosition = speak.prefs:Get("tag_position")
+
+      if shouldShowTag ~= false and tagPosition then
+        tag = speak:ParseChatText(self.tags:Get(element))
         message = table.Add(message, tag[1])
         table.insert(message, " ")
+      end
 
-        table.insert(message, team.GetColor(element:Team()))
-        for _, token in pairs(tokenize(element:Nick())) do
-          table.insert(message, token)
-        end
-      else
-        table.insert(message, team.GetColor(element:Team()))
-        for _, token in pairs(tokenize(element:Nick())) do
-          table.insert(message, token)
-        end
-        
+      local lastElement = message[i - 1]
+      table.insert(message, lastElement and IsColor(lastElement) and lastElement or team.GetColor(element:Team()))
+      for _, token in pairs(tokenize(element:Nick())) do
+        table.insert(message, token)
+      end
+
+      if shouldShowTag ~= false and not tagPosition then
+        tag = speak:ParseChatText(self.tags:Get(element))
         table.insert(message, " ")
         message = table.Add(message, tag[1])
       end
