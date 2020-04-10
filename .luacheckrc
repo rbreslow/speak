@@ -3681,7 +3681,6 @@ stds.speak.globals = {
   -- Libraries
   "IS",
   "Preferences",
-  "I18n",
 
  -- Globals from Garry's Mod we're overwriting
   "chat"
