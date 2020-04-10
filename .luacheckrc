@@ -3671,12 +3671,9 @@ stds.speak.globals = {
   "ChatAvatar",
   "ChatImage",
   "ChatFontMultiplier",
-  "ModelSheet",
-  "AvatarSheet",
 
   -- Libraries
   "IS",
-  "Preferences",
 
  -- Globals from Garry's Mod we're overwriting
   "chat"

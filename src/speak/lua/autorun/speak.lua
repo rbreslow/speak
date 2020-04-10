@@ -8,20 +8,18 @@ if SERVER then
     AddCSLuaFile "speak/config/cl_emoticons.lua"
     AddCSLuaFile "speak/config/sh_settings.lua"
 
-    AddCSLuaFile "speak/gen/bundle.lua"
-    AddCSLuaFile "speak/gen/emoji_data.lua"
-    AddCSLuaFile "speak/gen/version.lua"
-
     AddCSLuaFile "speak/lib/avatarsheet.lua"
     AddCSLuaFile "speak/lib/i18n.lua"
     AddCSLuaFile "speak/lib/modelsheet.lua"
     AddCSLuaFile "speak/lib/preferences.lua"
 
-    AddCSLuaFile "speak/vendor/base64.lua"
+    AddCSLuaFile "speak/static/bundle.lua"
+    AddCSLuaFile "speak/static/version.lua"
+
     AddCSLuaFile "speak/vendor/is.lua"
     AddCSLuaFile "speak/vendor/log.lua"
 
-    AddCSLuaFile "speak/vgui/speak_chatbox.lua"
+    AddCSLuaFile "speak/vgui/chatbox.lua"
     AddCSLuaFile "speak/vgui/checkbox.lua"
     AddCSLuaFile "speak/vgui/grid.lua"
     AddCSLuaFile "speak/vgui/menu.lua"

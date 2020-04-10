@@ -34,8 +34,9 @@ Then, launch the Source Dedicated Server (srcds) instance:
 
 ## Scripts
 
-| Name      | Description                           |
-|-----------|---------------------------------------|
-| `server`  | Start Source Dedicated Server (srcds) |
-| `test`    | Run tests                             |
-| `cibuild` | Build addon for distribution          |
+| Name      | Description                                     |
+|-----------|-------------------------------------------------|
+| `cibuild` | Build addon for distribution.                   |
+| `server`  | Start Source Dedicated Server (srcds).          |
+| `test`    | Run tests.                                      |
+| `watch`   | Watch files and recompile whenever they change. |

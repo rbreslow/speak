@@ -1,37 +1,48 @@
-local PANEL = {}
+include "speak/static/bundle.lua"
 
-local base64 = include "speak/vendor/base64.lua"
-local emojiData = include "speak/gen/emoji_data.lua"
+local PANEL = {}
 
 local blur = Material("pp/blurscreen")
 local scrw = ScrW()
 local scrh = ScrH()
 
-local startTime = 0
-local lifeTime = .25
-local startVal = 0
-local endVal = 0
-local value = startVal
-
-local startedOpenAnim = false
-local startedCloseAnim = true
+function PANEL:Refresh()
+  speak.logger.info "Refreshing HTML View"
+  self:Close()
+  self.html:SetHTML(speak.bundle)
+end
 
 function PANEL:Init()
-  self._isOpen = false
+  self.isOpen = false
 
-  self:SetTitle("")
-  self:SetDeleteOnClose(false)
-  self:SetScreenLock(true)
-  self:ShowCloseButton(false)
+  self.anim = {}
+  self.anim.startTime = 0
+  self.anim.lifeTime = .25
+  self.anim.startVal = 0
+  self.anim.endVal = 0
+  self.anim.value = self.anim.startVal
+  self.anim.startedOpen = false
+  self.anim.startedClose = true
+
   self:SetSizable(true)
-  self:SetPaintedManually(true)
+  self:SetScreenLock(true)
+  self:SetDeleteOnClose(false)
+  self:SetTitle("")
+
+  self:ShowCloseButton(false)
 
   self:DockMargin(0, 0, 0, 0)
   self:DockPadding(6, 6, 6, 6)
 
+  self:SetPaintedManually(true)
+  self:KillFocus()
+
   self.html = vgui.Create("DHTML", self)
-  self.html:Dock(FILL)
   self.html:SetAllowLua(true)
+
+  self:Refresh()
+  
+  self.html:Dock(FILL)
 
   self.html:AddFunction("speak", "Say", function(str)
     RunConsoleCommand("say", str)
@@ -65,9 +76,7 @@ function PANEL:Init()
     gui.OpenURL(str)
   end)
 
-  self.html:AddFunction("speak", "Close", function()
-    chat.Close()
-  end)
+  self.html:AddFunction("speak", "Close", chat.Close)
 
   self.html:AddFunction("speak", "MaxLengthHit", function()
     surface.PlaySound("Resource/warning.wav")
@@ -79,12 +88,8 @@ function PANEL:Init()
 
     for _,emote in pairs(speak.emoticons.list) do
       table.insert(data, {label = emote.code, value = emote.url})
-      -- emotes override emoji
-      table.RemoveByValue(emojiData, emote.code)
-    end
-
-    for _,emojiName in pairs(emojiData) do
-      table.insert(data, {label = emojiName, value = ""})
+      -- -- emotes override emoji
+      -- table.RemoveByValue(self.emojiData, emote.code)
     end
 
     for _,player in pairs(player.GetAll()) do
@@ -93,14 +98,12 @@ function PANEL:Init()
 
     return data
   end)
+end
 
-  self:Refresh()
-
-  self:SetVisible(true)
-  self:MakePopup()
-
-  self:SetKeyboardInputEnabled(false)
-  self:SetMouseInputEnabled(false)
+function PANEL:Clear()
+  if IsValid(self.html) then
+      self.html:Remove()
+  end
 end
 
 function PANEL:OnScreenSizeChanged(_, _)
@@ -109,27 +112,28 @@ function PANEL:OnScreenSizeChanged(_, _)
 end
 
 function PANEL:Paint(w, h)
-  if self:IsOpen() and not startedOpenAnim then
-    startedCloseAnim = false
-    startedOpenAnim = true
-    startVal = 0
-    endVal = 140
-    startTime = CurTime()
-  elseif not self:IsOpen() and not startedCloseAnim then
-    startedOpenAnim = false
-    startedCloseAnim = true
+  if self:IsOpen() and not self.anim.startedOpen then
+    self.anim.startedOpen = true
+    self.anim.startedClose = false
+    
+    self.anim.startVal = 0
+    self.anim.endVal = 140
+    self.anim.startTime = CurTime()
+  elseif not self:IsOpen() and not self.anim.startedClose then
+    self.anim.startedOpen = false
+    self.anim.startedClose = true
 
-    startVal = 140
-    endVal = 0
-    startTime = CurTime()
+    self.anim.startVal = 140
+    self.anim.endVal = 0
+    self.anim.startTime = CurTime()
   end
 
-  local fraction = (CurTime() - startTime) / lifeTime
+  local fraction = (CurTime() - self.anim.startTime) / self.anim.lifeTime
   fraction = math.Clamp(fraction, 0, 1)
 
-  value = Lerp(fraction, startVal, endVal)
+  self.anim.value = Lerp(fraction, self.anim.startVal, self.anim.endVal)
 
-  if value > 0 then
+  if self.anim.value > 0 then
     surface.SetMaterial(blur)
     surface.SetDrawColor(Color(255, 255, 255, 255))
     blur:SetFloat("$blur", 1.25)
@@ -141,7 +145,7 @@ function PANEL:Paint(w, h)
 
     surface.DrawTexturedRect(x, y, scrw, scrh)
 
-    surface.SetDrawColor(Color(0, 0, 0, value))
+    surface.SetDrawColor(Color(0, 0, 0, self.anim.value))
     surface.DrawRect(0, 0, w, h)
   end
 end
@@ -170,34 +174,33 @@ function PANEL:RefreshAutocomplete()
   self.html:RunJavascript("speakJS.default.refreshAutocomplete();")
 end
 
-function PANEL:Refresh()
-  local bundle = include "speak/gen/bundle.lua"
-  self.html:SetHTML(base64:dec(bundle))
-end
+function PANEL:MakePopup()
+  self.BaseClass.MakePopup(self)
 
-function PANEL:RequestFocus()
-  self:SetKeyboardInputEnabled(true)
   self:SetMouseInputEnabled(true)
 
   self.html:RequestFocus()
+  self.html:SetMouseInputEnabled(true)
   self.html:RunJavascript("speakJS.ChatboxState.focus();")
 end
 
 function PANEL:Close()
-  self._isOpen = false
+  self.isOpen = false
 
   self.html:RunJavascript("speakJS.default.close();")
 
   self:SetKeyboardInputEnabled(false)
   self:SetMouseInputEnabled(false)
+
+  self:KillFocus()
 end
 
 function PANEL:IsOpen()
-  return self._isOpen
+  return self.isOpen
 end
 
 function PANEL:Open(isTeamChat)
-  self._isOpen = true
+  self.isOpen = true
 
   self.html:RunJavascript(string.format(
     "speakJS.default.open(%s, '%s', '%s');",
@@ -206,7 +209,7 @@ function PANEL:Open(isTeamChat)
     speak.i18n:Translate("SAY_TEAM")
   ))
 
-  self:RequestFocus()
+  self:MakePopup()
 end
 
 function PANEL:OnMouseReleased()
@@ -218,9 +221,14 @@ function PANEL:OnMouseReleased()
   speak.prefs:SetNumber("chatbox_w", w)
   speak.prefs:SetNumber("chatbox_h", h)
 
-  self.Dragging = nil
-  self.Sizing = nil
-  self:MouseCapture(false)
+  self.BaseClass.OnMouseReleased(self)
 end
 
-vgui.Register("speak.Chatbox", PANEL, "DFrame")
+PANEL.AllowAutoRefresh = true
+
+function PANEL:PostAutoRefresh()
+  self:Clear()
+  self:Init()
+end
+
+derma.DefineControl("speak_Chatbox", "", PANEL, "DFrame")

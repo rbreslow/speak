@@ -1,12 +1,12 @@
-Preferences = include "lib/preferences.lua"
-AvatarSheet = include "lib/avatarsheet.lua"
-ModelSheet = include "lib/modelsheet.lua"
+local Preferences = include "lib/preferences.lua"
+local AvatarSheet = include "lib/avatarsheet.lua"
+local ModelSheet = include "lib/modelsheet.lua"
 
 include "cl_util.lua"
 
-speak = speak or {}
 speak.vgui = {}
 
+include "speak/vgui/chatbox.lua"
 include "speak/vgui/checkbox.lua"
 include "speak/vgui/grid.lua"
 include "speak/vgui/menu.lua"
@@ -309,6 +309,10 @@ function speak:ParseChatText(...)
   return message
 end
 
+hook.Add("Initialize", "Speak_Initialize", function()
+  speak.view = vgui.Create("speak_Chatbox")
+end)
+
 function chat.Close()
   if speak.menu.open then
     return
@@ -338,8 +342,27 @@ function chat.Open(mode)
     speak.view:Open(true)
   end
   
-  hook.Run("StartChat")
+  hook.Run("StartChat", not mode)
 end
+
+hook.Add("StartChat", "EscapeClose", function(_)
+  local console = input.GetKeyCode(input.LookupBinding("toggleconsole"))
+
+  hook.Add("PreDrawHUD", "Speak_EscapeClose", function()
+    if gui.IsGameUIVisible() then
+      gui.HideGameUI()
+      speak.view:MakePopup()
+    end
+
+    if input.IsKeyDown(KEY_ESCAPE) then
+      chat.Close()
+    end
+	end)
+end)
+
+hook.Add("FinishChat", "Speak_EscapeClose", function()
+	hook.Remove("PreDrawHUD", "Speak_EscapeClose")
+end)
 
 -- [[ hooks ]]
 hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
@@ -461,7 +484,7 @@ end)
 
 -- disable old chat
 hook.Add("HUDShouldDraw", "speak.HUDShouldDraw", function(class)
-  if class == "CHudChat" then return false end
+  if class == "CHudChat" and IsValid(speak.view) then return false end
 end)
 
 net.Receive("speak.chataddtext", function(_)

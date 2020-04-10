@@ -20,6 +20,7 @@ services:
     image: node:10-slim
     volumes:
       - ./src/app:/usr/local/src
+      - ./src/speak/lua/speak/static:/usr/local/src/dist
     working_dir: /usr/local/src
     command: yarn watch
 
