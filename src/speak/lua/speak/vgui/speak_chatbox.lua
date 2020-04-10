@@ -54,7 +54,7 @@ function PANEL:Init()
   end)
 
   self.html:AddFunction("speak", "OpenSettings", function()
-    RunConsoleCommand("speak_settings")
+    speak.menu:Toggle()
   end)
 
   self.html:AddFunction("speak", "ChatInitialized", function()

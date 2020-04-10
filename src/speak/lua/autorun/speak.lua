@@ -22,13 +22,22 @@ if SERVER then
     AddCSLuaFile "speak/vendor/log.lua"
 
     AddCSLuaFile "speak/vgui/speak_chatbox.lua"
-    AddCSLuaFile "speak/vgui/speak_radiobutton.lua"
-    AddCSLuaFile "speak/vgui/speak_settings.lua"
+    AddCSLuaFile "speak/vgui/checkbox.lua"
+    AddCSLuaFile "speak/vgui/grid.lua"
+    AddCSLuaFile "speak/vgui/menu.lua"
+    AddCSLuaFile "speak/vgui/messages.lua"
+    AddCSLuaFile "speak/vgui/notifications.lua"
+    AddCSLuaFile "speak/vgui/radiobutton.lua"
+    AddCSLuaFile "speak/vgui/radiorow.lua"
+    AddCSLuaFile "speak/vgui/roundedavatarimage.lua"
+    AddCSLuaFile "speak/vgui/roundeddmodelpanel.lua"
+    AddCSLuaFile "speak/vgui/themes.lua"
 
     AddCSLuaFile "speak/cl_emoticons.lua"
     AddCSLuaFile "speak/cl_locale.lua"
     AddCSLuaFile "speak/cl_main.lua"
     AddCSLuaFile "speak/cl_tags.lua"
+    AddCSLuaFile "speak/cl_util.lua"
 
     include "speak/sv_main.lua"
 
