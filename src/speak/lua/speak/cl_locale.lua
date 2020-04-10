@@ -7,7 +7,7 @@ speak.i18n = I18n(GetLanguage())
 
 local function OnLanguageChanged()
   speak.i18n:SetLocale(GetLanguage())
-  speak.menu:Rebuild()
+  hook.Run("SpeakLanguageChanged")
 end
 cvars.AddChangeCallback("gmod_language", OnLanguageChanged)
 
@@ -40,8 +40,9 @@ speak.i18n:Load({
     THEMES = "Themes",
     THEMES_POPOVER = "Change the appearance of Speak.",
     
-    EMOJI_ENABLED = "Display emoji in chat",
     AVATARS_ENABLED = "Display avatars in chat",
+    TAGS_ENABLED = "Display tags in chat",
+    EMOJI_ENABLED = "Display emoji in chat",
 
     SOUNDS = "Sounds",
     DURATION = "Duration",

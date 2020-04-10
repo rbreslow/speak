@@ -180,6 +180,22 @@ function PANEL:Init()
 
     hook.Run("SpeakSettingsTagStyle", self, self.sections.tags)
 
+    self.tagsCheck = speak.vgui.CheckBoxLabel(i18n:Translate("TAGS_ENABLED"), self.sections.tags)
+    self.tagsCheck:SetValue(speak.prefs:Get("tag_enabled"))
+    self.tagsCheck.OnChange = function(this, value)
+        for _,child in ipairs(self.sections.tags:GetChildren()) do
+            if child ~= this then
+                child:SetEnabled(value)
+            end
+        end
+
+        speak.prefs:SetBoolean("tag_enabled", value)
+    end
+    self.tagsCheck:SetEnabled(not speak.prefs:IsEnforced("tag_enabled"))
+    -- if this is already disabled, disable other tag settings
+    self.tagsCheck:OnChange(self.tagsCheck:GetChecked())
+    self.tagsCheck:DockMargin(8, 0, 8, 0)
+
     speak.vgui.HorizontalRule(self)
 
     self.sections.displayOptions = speak.vgui.MenuSection(i18n:Translate("DISPLAY_OPTIONS"), self)

@@ -30,6 +30,7 @@ speak.prefs = Preferences("speak")
 
 -- [[ general preferences ]]
 speak.prefs:DefineBoolean("tag_position", true, function(_) end)
+speak.prefs:DefineBoolean("tag_enabled", true, function(_) end)
 
 -- [[ emoji preferences ]]
 speak.prefs:DefineNumber("emoji_pack", 1, function(value)
@@ -239,31 +240,39 @@ local function tokenize(str)
 end
 
 function speak:ParseChatText(...)
+  local varargs = {...}
+  hook.Run("SpeakPreParseChatText", varargs)
+
   local message = {}
   
-  for _, element in pairs({...}) do
+  for i = 1, #varargs do
+    local element = varargs[i]
     local elementType = type(element)
     
     if elementType == "Player" then
       table.insert(message, ChatAvatar(element))
       table.insert(message, " ")
       
-      local tag = speak:ParseChatText(self.tags:Get(element))
-      
-      if speak.prefs:Get("tag_position") then
+      local tag = self.tags:Get(element)
+      local shouldShowTag = not table.IsEmpty(tag) and speak.prefs:Get("tag_enabled") and hook.Run("SpeakShouldShowTag", varargs)
+      local tagPosition = speak.prefs:Get("tag_position")
+
+      -- tags on the left
+      if shouldShowTag ~= false and tagPosition then
+        tag = speak:ParseChatText(self.tags:Get(element))
         message = table.Add(message, tag[1])
         table.insert(message, " ")
+      end
 
-        table.insert(message, team.GetColor(element:Team()))
-        for _, token in pairs(tokenize(element:Nick())) do
-          table.insert(message, token)
-        end
-      else
-        table.insert(message, team.GetColor(element:Team()))
-        for _, token in pairs(tokenize(element:Nick())) do
-          table.insert(message, token)
-        end
-        
+      local lastElement = message[i - 1]
+      table.insert(message, lastElement and IsColor(lastElement) and lastElement or team.GetColor(element:Team()))
+      for _, token in pairs(tokenize(element:Nick())) do
+        table.insert(message, token)
+      end
+
+      -- tags on the right
+      if shouldShowTag ~= false and not tagPosition then
+        tag = speak:ParseChatText(self.tags:Get(element))
         table.insert(message, " ")
         message = table.Add(message, tag[1])
       end
@@ -298,22 +307,6 @@ function speak:ParseChatText(...)
   end
   
   return message
-end
-
-function speak.Say(message)
-  if Clockwork then
-    Clockwork.datastream:Start("PlayerSay", message)
-  else
-    LocalPlayer():ConCommand("say \"" .. message .. "\"")
-  end
-end
-
-function speak.SayTeam(message)
-  if Clockwork then
-    Clockwork.datastream:Start("PlayerSay", message)
-  else
-    LocalPlayer():ConCommand("say_team \"" .. message .. "\"")
-  end
 end
 
 function chat.Close()
@@ -452,8 +445,18 @@ hook.Add("OnPlayerChat", "speak.OnPlayerChat", function(player, text)
   end
 end)
 
-hook.Add("ChatText", "speak.chattext", function(_, _, text, _)
-  chat.AddText(text)
+hook.Add("ChatText", "speak.chattext", function(index, name, text, filter)
+  if filter == "joinleave" or 
+    filter == "namechange" or 
+    filter == "servermsg" or 
+    filter == "teamchange" or 
+    filter == "none" then
+    chat.AddText(text)
+  elseif index == 0 and filter == "chat" then
+    chat.AddText(name, Color(255, 255, 255), ": " .. text)
+  end
+
+  return false
 end)
 
 -- disable old chat
