@@ -77,6 +77,7 @@ function speak.menu:Toggle()
     if IsValid(self.panel) then
         if self.open then
             self.panel:SetVisible(true)
+            self.panel:MakePopup()
         else
             self.panel:Close()
         end
