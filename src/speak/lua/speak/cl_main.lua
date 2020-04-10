@@ -459,8 +459,18 @@ hook.Add("OnPlayerChat", "speak.OnPlayerChat", function(player, text)
   end
 end)
 
-hook.Add("ChatText", "speak.chattext", function(_, _, text, _)
-  chat.AddText(text)
+hook.Add("ChatText", "speak.chattext", function(index, name, text, filter)
+  if filter == "joinleave" or
+    filter == "namechange" or
+    filter == "servermsg" or
+    filter == "teamchange" or
+    filter == "none" then
+    chat.AddText(text)
+  elseif index == 0 and filter == "chat" then
+    chat.AddText(name, Color(255, 255, 255), ": " .. text)
+  end
+
+  return false
 end)
 
 -- disable old chat

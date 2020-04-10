@@ -76,6 +76,7 @@ hook.Add("SpeakSettingsTagStyle", "speak.compat.darkrp", function(_, tagStyle)
       prefs:SetBoolean("darkrp_tags", value)
   end
   check:SetEnabled(not prefs:IsEnforced("darkrp_tags"))
+  check:DockMargin(8, 0, 8, 8)
 end)
 
 speak.logger.trace "darkrp compatibility"
