@@ -309,10 +309,6 @@ function speak:ParseChatText(...)
   return message
 end
 
-hook.Add("Initialize", "Speak_Initialize", function()
-  speak.view = vgui.Create("speak_Chatbox")
-end)
-
 function chat.Close()
   if speak.menu.open then
     return
@@ -345,6 +341,7 @@ function chat.Open(mode)
   hook.Run("StartChat", not mode)
 end
 
+-- [[ hooks ]]
 hook.Add("StartChat", "EscapeClose", function(_)
   local console = input.GetKeyCode(input.LookupBinding("toggleconsole"))
 
@@ -364,7 +361,6 @@ hook.Add("FinishChat", "Speak_EscapeClose", function()
 	hook.Remove("PreDrawHUD", "Speak_EscapeClose")
 end)
 
--- [[ hooks ]]
 hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
   if (bind == "messagemode" or bind == "say") and pressed then
     chat.Open(1)
@@ -375,22 +371,9 @@ hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
   end
 end)
 
-
-local function initialize()  
-  include "speak/vgui/speak_chatbox.lua"
-
-  -- initialize the main chat frame
-  speak.view = vgui.Create("speak.Chatbox")
-end
-
--- autorefresh
-if speak.view then
-  speak.view:Remove()
-
-  initialize()
-else
-  hook.Add("Initialize", "speak.Initialize", initialize)
-end
+hook.Add("Initialize", "speak_Initialize", function()
+  speak.view = vgui.Create("speak_Chatbox")
+end)
 
 -- fired when the DHTML view has initialized
 hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
