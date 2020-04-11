@@ -30,7 +30,6 @@ function PANEL:Init()
     self:SetDeleteOnClose(false)
     self:SetTitle(speak.i18n:Translate("PREFERENCES"))
 
-    self.scrw = ScrW()
     self.scrh = ScrH()
     self:InvalidateLayout(true)
 
@@ -42,8 +41,7 @@ function PANEL:Init()
     self.tabs:AddSheet(speak.i18n:Translate("NOTIFICATIONS"), vgui.Create("speak_Notifications", self.tabs), "icon16/bell.png", false, false, speak.i18n:Translate("NOTIFICATIONS_POPOVER"))
 end
 
-function PANEL:OnScreenSizeChanged(w, h)
-    self.scrw = w
+function PANEL:OnScreenSizeChanged(_, h)
     self.scrh = h
     self:InvalidateLayout()
 end
