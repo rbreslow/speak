@@ -52,8 +52,8 @@ function PANEL:PerformLayout(w, h)
     self.BaseClass.PerformLayout(self, w, h)
     
     self:SetSize(384, self.scrh - self.scrh / 2)
-	self:CenterVertical()
-	self:CenterHorizontal()
+    self:CenterVertical()
+    self:CenterHorizontal()
 end
 
 function PANEL:MakePopup()
