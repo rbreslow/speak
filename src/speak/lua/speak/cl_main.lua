@@ -424,20 +424,6 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
       speak.avatarSheet:Render()
     end
   end)
-
-  hook.Add("PreRender", "speak.PreRender", function()
-    if not chat.IsOpen() or not gui.IsGameUIVisible() then
-      return false
-    end
-    
-    if input.IsKeyDown(KEY_ESCAPE) then
-      chat.Close()
-      gui.HideGameUI()
-    elseif input.IsKeyDown(KEY_BACKQUOTE) and input.LookupBinding("toggleconsole") == "`" then
-      gui.HideGameUI()
-      speak.view:RequestFocus()
-    end
-  end)
 end)
 
 -- fire notifications
