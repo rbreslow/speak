@@ -10,13 +10,6 @@ surface.CreateFont("speak_Menu_Paragraph", {
 
 speak.menu = {}
 speak.menu.open = false
-local width = 384
-if ScrW() > width then
-	speak.menu.width = width
-else
-	speak.menu.width = ScrW()
-end
-speak.menu.height = ScrH() - 512
 speak.menu.darkMode = false
 
 AccessorFunc(speak.menu, "open", "Open", FORCE_BOOL)
@@ -37,8 +30,9 @@ function PANEL:Init()
     self:SetDeleteOnClose(false)
     self:SetTitle(speak.i18n:Translate("PREFERENCES"))
 
-    self:SetSize(speak.menu.width, speak.menu.height)
-    self:Center()
+    self.scrw = ScrW()
+    self.scrh = ScrH()
+    self:InvalidateLayout(true)
 
     self.tabs = vgui.Create("DPropertySheet", self)
     self.tabs:Dock(FILL)
@@ -46,6 +40,20 @@ function PANEL:Init()
     self.tabs:AddSheet(speak.i18n:Translate("MESSAGE_DISPLAY"), vgui.Create("speak_Messages", self.tabs), "icon16/comments.png", false, false, speak.i18n:Translate("MESSAGE_DISPLAY_POPOVER"))
     self.tabs:AddSheet(speak.i18n:Translate("THEMES"), vgui.Create("speak_Themes", self.tabs), "icon16/palette.png", false, false, speak.i18n:Translate("THEMES_POPOVER"))
     self.tabs:AddSheet(speak.i18n:Translate("NOTIFICATIONS"), vgui.Create("speak_Notifications", self.tabs), "icon16/bell.png", false, false, speak.i18n:Translate("NOTIFICATIONS_POPOVER"))
+end
+
+function PANEL:OnScreenSizeChanged(w, h)
+    self.scrw = w
+    self.scrh = h
+    self:InvalidateLayout()
+end
+
+function PANEL:PerformLayout(w, h)
+    self.BaseClass.PerformLayout(self, w, h)
+    
+    self:SetSize(384, self.scrh - self.scrh / 2)
+	self:CenterVertical()
+	self:CenterHorizontal()
 end
 
 function PANEL:MakePopup()
