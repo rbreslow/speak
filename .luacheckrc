@@ -3674,10 +3674,6 @@ stds.speak.globals = {
   "ModelSheet",
   "AvatarSheet",
 
-  -- Compatability
-  "Clockwork",
-  "DarkRP",
-
   -- Libraries
   "IS",
   "Preferences",
