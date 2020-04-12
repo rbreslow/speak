@@ -1,56 +1,55 @@
-I18n = include "lib/i18n.lua"
-
-local function getGameLocale()
+local function GetLanguage()
   return GetConVar("gmod_language"):GetString():sub(1, 2)
 end
 
-local i18n = I18n(getGameLocale())
+local I18n = include "lib/i18n.lua"
+speak.i18n = I18n(GetLanguage())
 
-cvars.AddChangeCallback("gmod_language", function(_, _, _)
-  i18n:SetLocale(getGameLocale())
+local function OnLanguageChanged()
+  speak.i18n:SetLocale(GetLanguage())
+  speak.menu:Rebuild()
+end
+cvars.AddChangeCallback("gmod_language", OnLanguageChanged)
 
-  -- refresh stale settings strings
-  speak.settingsView:Remove()
-  speak.settingsView = vgui.Create("speak.Settings")
-end)
-
-i18n:Load({
+speak.i18n:Load({
   en = {
     SAY = "SAY",
     SAY_TEAM = "SAY TEAM",
     
-    AVATAR_STYLE = "Avatar Style",
+    PREFERENCES = "Preferences",
+
+    AVATAR_STYLE = "Avatars",
     STEAM_AVATAR = "Steam Avatar",
     PLAYER_MODEL = "Player Model",
-    TAG_POSITION = "Tag Position",
+    TAG_POSITION = "Tags",
     LEFT = "Left",
     RIGHT = "Right",
     ADMIN = "Admin",
-    DISPLAY_OPTIONS = "Display Options",
+    DISPLAY_OPTIONS = "Additional options",
     DISPLAY_TIMESTAMPS = "Display timestamps in console log",
     HOUR = "Show 24-hour times (16:00 rather than 4:00 PM)",
-    EMOJI_STYLE = "Emoji Style",
+    EMOJI_STYLE = "Emoji",
     APPLE = "Apple/International Style",
     GOOGLE = "Google Style",
     TWITTER = "Twitter Style",
     FACEBOOK = "Facebook Style",
     MESSENGER = "Messenger Style",
     
-    MESSAGE_DISPLAY = "Message Display",
+    MESSAGE_DISPLAY = "Messages",
     MESSAGE_DISPLAY_POPOVER = "Tweak message display settings.",
-    STYLE = "Style",
-    STYLE_POPOVER = "Style the chatbox.",
-    ABOUT = "About",
-    ABOUT_POPOVER = "Information and attributions.",
+    THEMES = "Themes",
+    THEMES_POPOVER = "Change the appearance of Speak.",
     
-    EMOJI_ENABLED = "Emoji Enabled",
-    AVATARS_ENABLED = "Avatars Enabled",
-    
+    EMOJI_ENABLED = "Display emoji in chat",
+    AVATARS_ENABLED = "Display avatars in chat",
+
     SOUNDS = "Sounds",
     DURATION = "Duration",
     DO_NOT_DISTURB = "Do Not Disturb",
+    DO_NOT_DISTURB_DESC = "When Do Not Disturb is turned on, Speak won't send you any notifications.",
     NOTIFICATIONS = "Notifications",
     NOTIFICATIONS_POPOVER = "Adjust notification settings.",
+    DISABLE_NOTIFICATIONS = "Disable notifications",
     
     TIMESTAMPS = "Timestamps",
     COLOR = "Color",
@@ -168,5 +167,3 @@ i18n:Load({
     OPACITY = "Opacité",
   }
 })
-
-return i18n

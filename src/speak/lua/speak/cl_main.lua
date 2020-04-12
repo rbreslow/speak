@@ -2,9 +2,23 @@ Preferences = include "lib/preferences.lua"
 AvatarSheet = include "lib/avatarsheet.lua"
 ModelSheet = include "lib/modelsheet.lua"
 
-speak = speak or {}
+include "cl_util.lua"
 
-speak.i18n = include "cl_locale.lua"
+speak = speak or {}
+speak.vgui = {}
+
+include "speak/vgui/checkbox.lua"
+include "speak/vgui/grid.lua"
+include "speak/vgui/menu.lua"
+include "speak/vgui/messages.lua"
+include "speak/vgui/notifications.lua"
+include "speak/vgui/radiobutton.lua"
+include "speak/vgui/radiorow.lua"
+include "speak/vgui/roundedavatarimage.lua"
+include "speak/vgui/roundeddmodelpanel.lua"
+include "speak/vgui/themes.lua"
+
+include "cl_locale.lua"
 
 
 speak.emoticons = include "cl_emoticons.lua"
@@ -303,7 +317,7 @@ function speak.SayTeam(message)
 end
 
 function chat.Close()
-  if speak.settingsView:IsVisible() then
+  if speak.menu.open then
     return
   end
   
@@ -348,26 +362,14 @@ end)
 
 local function initialize()  
   include "speak/vgui/speak_chatbox.lua"
-  include "speak/vgui/speak_radiobutton.lua"
-  include "speak/vgui/speak_settings.lua"
 
   -- initialize the main chat frame
   speak.view = vgui.Create("speak.Chatbox")
-  speak.settingsView = vgui.Create("speak.Settings")
-  
-  concommand.Add("speak_settings", function()
-    speak.settingsView:SetVisible(true)
-    speak.settingsView:MakePopup()
-    speak.settingsView:AlphaTo(255, 0.25, 0, function() end)
-    -- or else the chatbox is going to consume clicks
-    speak.settingsView:SetFocusTopLevel(true)
-  end)
 end
 
 -- autorefresh
 if speak.view then
   speak.view:Remove()
-  speak.settingsView:Remove()
 
   initialize()
 else

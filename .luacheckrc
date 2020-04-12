@@ -163,6 +163,7 @@ stds.garrysmod.read_globals = {
   "Color",
   "ColorAlpha",
   "ColorRand",
+  "ColorToHSL",
   "ColorToHSV",
   "CompileFile",
   "CompileString",
@@ -250,6 +251,7 @@ stds.garrysmod.read_globals = {
   "GetRenderTargetEx",
   "GetSaveFileDetails",
   "GetViewEntity",
+  "HSLToColor",
   "HSVToColor",
   "HTTP",
   "include",
@@ -3679,7 +3681,6 @@ stds.speak.globals = {
   -- Libraries
   "IS",
   "Preferences",
-  "I18n",
 
  -- Globals from Garry's Mod we're overwriting
   "chat"
