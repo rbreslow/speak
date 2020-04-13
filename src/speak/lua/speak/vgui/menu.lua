@@ -103,8 +103,8 @@ function speak.menu:Rebuild()
     end  
 end
 
-hook.Add("SpeakLanguageChanged", "speak_Menu_Rebuild", function() speak.menu:Rebuild() end)
-hook.Add("preferences.policyupdate", "speak_Menu_Rebuild", function() speak.menu:Rebuild() end)  
+hook.Add("SpeakLanguageChanged", speak.menu, speak.menu.Rebuild)
+hook.Add("preferences.policyupdate", speak.menu, speak.menu.Rebuild)  
 
 PANEL = {}
 
