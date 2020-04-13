@@ -78,4 +78,7 @@ hook.Add("SpeakSettingsTagStyle", "speak.compat.darkrp", function(_, tagStyle)
   check:DockMargin(8, 0, 8, 8)
 end)
 
+-- if the menu gets instantiated before our hook is added, or autorefresh
+speak.menu:Rebuild()
+
 speak.logger.trace "darkrp compatibility"
