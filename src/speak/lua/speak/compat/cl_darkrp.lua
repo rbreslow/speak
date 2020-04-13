@@ -4,13 +4,12 @@ local ipairs = ipairs
 local player = player
 
 local function extractPlayer(str)
-    local pattern = "(.*)%s(.*)"
+  local pattern = "(.*)%s(.*)"
 
-    for _,ply in ipairs(player.GetAll()) do
-        for prefix, suffix in str:gmatch(pattern:format(ply:Nick())) do
-          return prefix, ply, suffix
-        end
-    end
+  for _,ply in ipairs(player.GetAll()) do
+    local prefix, suffix = str:match(pattern:format(ply:Nick()))
+    if prefix then return prefix, ply, suffix end
+  end
 end
 
 hook.Add("SpeakPreParseChatText", "speak.compat.darkrp", function(message) 
