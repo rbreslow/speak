@@ -34,11 +34,11 @@ function PANEL:Init()
   self.html:SetAllowLua(true)
 
   self.html:AddFunction("speak", "Say", function(str)
-    LocalPlayer():ConCommand(string.format("say \"%s\"", str))
+    RunConsoleCommand("say", str)
   end)
 
   self.html:AddFunction("speak", "SayTeam", function(str)
-    LocalPlayer():ConCommand(string.format("say_team \"%s\"", str))
+    RunConsoleCommand("say_team", str)
   end)
 
   self.html:AddFunction("speak", "GetPref", function(str)
