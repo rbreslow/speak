@@ -1,21 +1,18 @@
-local type = type
+local isstring = isstring
 local table = table
 local ipairs = ipairs
 local player = player
 
 local function extractPlayer(str)
-    for _,v in ipairs(player.GetAll()) do
-        local startPos, endPos = str:find(v:Nick())
+    local pattern = "(.*)%s(.*)"
 
-        if startPos ~= nil then
-            local prefix = str:sub(1, startPos - 1)
-            local suffix = str:sub(endPos + 1) 
-
-            return prefix, v, suffix
+    for _,ply in ipairs(player.GetAll()) do
+        for prefix, suffix in str:gmatch(pattern:format(ply:Nick())) do
+          return prefix, ply, suffix
         end
     end
 
-    return nil, nil, nil
+    return nil
 end
 
 hook.Add("SpeakPreParseChatText", "speak.compat.darkrp", function(message) 
@@ -26,10 +23,10 @@ hook.Add("SpeakPreParseChatText", "speak.compat.darkrp", function(message)
   end
 
   for i = 1, len do
-    if type(message[i]) == "string" then
+    if isstring(message[i]) then
       local prefix, ply, suffix = extractPlayer(message[i])
 
-      if prefix ~= nil and ply ~= nil and suffix ~= nil then
+      if IsValid(ply) then
         table.insert(message, i + 1, suffix)
         message[i] = ply
         table.insert(message, i, prefix)
@@ -53,7 +50,7 @@ hook.Add("SpeakShouldShowTag", "speak.compat.darkrp", function(message)
 
   local data = message[2]
 
-  if type(data) == "string" then
+  if isstring(data) then
     local haystack = message[2]:lower()
     local found = false
 
