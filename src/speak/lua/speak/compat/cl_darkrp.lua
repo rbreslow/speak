@@ -11,8 +11,6 @@ local function extractPlayer(str)
           return prefix, ply, suffix
         end
     end
-
-    return nil
 end
 
 hook.Add("SpeakPreParseChatText", "speak.compat.darkrp", function(message) 
