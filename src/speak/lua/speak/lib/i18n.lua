@@ -83,15 +83,22 @@ end
 --- Create a new key in the current locale.
 -- @param key Key to translate
 -- @param value Value to translate key to
-function I18n.prototype:Set(key, value)
+-- @param locale Locale to translate key for
+function I18n.prototype:Set(key, value, locale)
     IS.enforce_arg(1, 'Set', 'string', type(key))
     IS.enforce_arg(2, 'Set', 'string', type(value))
 
-    if self._locales[self._locale] == nil then
-        self._locales[self._locale] = {}
+    if locale then
+        IS.enforce_arg(3, 'Set', 'string', type(locale))
+    else
+        locale = self._locale
     end
 
-    self._locales[self._locale][key] = value
+    if self._locales[locale] == nil then
+        self._locales[locale] = {}
+    end
+
+    self._locales[locale][key] = value
 end
 
 function I18n.prototype:Load(data)

@@ -41,15 +41,26 @@ if SERVER then
 
     include "speak/sv_main.lua"
 
-    if DarkRP then
-        AddCSLuaFile("speak/compat/darkrp.lua")
+    if engine.ActiveGamemode() == "terrortown" then
+        AddCSLuaFile "speak/compat/cl_ttt.lua"
     end
 end
 
 if CLIENT then
     include "speak/cl_main.lua"
 
-    if DarkRP then
-        include("speak/compat/darkrp.lua")
+    if engine.ActiveGamemode() == "terrortown" then
+        include "speak/compat/cl_ttt.lua"
     end
 end
+
+local function LoadCompatibility()
+    if util.NetworkStringToID("DarkRP_Chat") ~= 0 then
+        if SERVER then
+            AddCSLuaFile "speak/compat/cl_darkrp.lua"
+        elseif CLIENT then
+            include "speak/compat/cl_darkrp.lua"
+        end
+    end
+end
+hook.Add("Initialize", "speak_LoadCompatibility", LoadCompatibility)
