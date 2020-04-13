@@ -15,10 +15,10 @@ end
 hook.Add("InitPostEntity", "speak.compat.ttt", TTTLanguageChanged)
 hook.Add("TTTLanguageChanged", "speak.compat.ttt", TTTLanguageChanged)
 
-local pairs = pairs
+local ipairs = ipairs
 local player = player
 local function findPlayer(str)
-  for _,v in pairs(player.GetAll()) do  
+  for _,v in ipairs(player.GetAll()) do  
     if str == v:Nick() then
       return v
     end
@@ -29,7 +29,7 @@ end
 
 local type = type
 hook.Add("SpeakPreParseChatText", "speak.compat.ttt", function(message) 
-  if type(message[2]) == "string" and type(message[4]) == "string" then
+  if isstring(message[2]) and isstring(message[4]) then
     local roleChat = message[2] == lastWords or
                     message[2] == traitor or
                     message[2] == detective
