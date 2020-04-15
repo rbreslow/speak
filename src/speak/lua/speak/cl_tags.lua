@@ -1,28 +1,39 @@
-local Tags = {}
-Tags.ranks = {}
-Tags.clients = {}
+local tags = {}
+tags.usergroups = {}
+tags.players = {}
 
-net.Receive('tags.update', function(_)
-    local obj = net.ReadTable()
+--- Define a chattag for a usergroup.
+-- @param usergroup The usergroup for the tag to be applied to
+-- @param tag The tag, in the format of chat.AddText() payload
+function tags:DefineForUserGroup(usergroup, tag)
+    IS.enforce_arg(1, 'DefineForUsergroup', 'string', type(usergroup))
+    IS.enforce_arg(2, 'DefineForUsergroup', 'table', type(tag))
 
-    -- Update our local tag store
-    Tags.ranks = obj.ranks
-    Tags.clients = obj.clients
-end)
+    self.usergroups[usergroup] = tag
+end
+  
+--- Define a chattag for a steamid64.
+-- @param usergroup The steamid64 for the tag to be applied to
+-- @param tag The tag, in the format of chat.AddText() payload
+function tags:DefineForSteamID64(steamid64, tag)
+    IS.enforce_arg(1, 'DefineForSteamID64', 'number', type(steamid64))
+    IS.enforce_arg(2, 'DefineForSteamID64', 'table', type(tag))
 
---[[ PUBLIC: ]]
+    self.players[steamid64] = tag
+end
+  
 
 --- Retrieve a tag from a player object.
--- @param client The player
-function Tags:Get(client)
-    IS.enforce_arg(1, 'Get', 'Player', type(client))
+-- @param ply The player
+function tags:Get(ply)
+    IS.enforce_arg(1, 'Get', 'Player', type(ply))
 
-    if Tags.clients[tonumber(client:SteamID64(), 10)] then
-        return Tags.clients[tonumber(client:SteamID64(), 10)]
+    if self.players[tonumber(ply:SteamID64(), 10)] then
+        return self.players[tonumber(ply:SteamID64(), 10)]
     end
 
-    if Tags.ranks[client:GetUserGroup()] then
-        return Tags.ranks[client:GetUserGroup()]
+    if self.usergroups[ply:GetUserGroup()] then
+        return self.usergroups[ply:GetUserGroup()]
     end
 
     return {}
@@ -30,22 +41,18 @@ end
 
 --- Retrieve a tag from a usergroup.
 -- @param usergroup The usergroup
-function Tags:GetFromUserGroup(usergroup)
+function tags:GetFromUserGroup(usergroup)
     IS.enforce_arg(1, 'GetFromUserGroup', 'string', type(usergroup))
 
-    if Tags.ranks[usergroup] then
-        return Tags.ranks[usergroup]
-    end
+    return self.usergroups[usergroup]
 end
 
 --- Retrieve a tag from a steamid64.
 -- @param steamid64 The steamid64
-function Tags:GetFromSteamID64(steamid64)
+function tags:GetFromSteamID64(steamid64)
     IS.enforce_arg(1, 'GetFromSteamID64', 'number', type(steamid64))
 
-    if Tags.clients[steamid64] then
-        return Tags.clients[steamid64]
-    end
+    return self.players[steamid64]
 end
 
-return Tags
+speak.tags = tags

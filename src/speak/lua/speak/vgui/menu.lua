@@ -69,7 +69,7 @@ function PANEL:OnClose()
 
     -- return focus to chatbox input field
     if chat.IsOpen() then
-        speak.view:RequestFocus()
+        chat.Open()
     end
 end
 

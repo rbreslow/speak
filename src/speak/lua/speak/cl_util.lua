@@ -27,3 +27,28 @@ function speak.util.RoundedRect(x, y, w, h, radius, color)
     surface.SetDrawColor(color)
     surface.DrawPoly(poly)
 end
+
+local blur = Material("pp/blurscreen")
+local ScrW = ScrW
+local ScrH = ScrH
+local render = render
+function speak.util.BlurredRect(panel, amount, passes, alpha)
+    -- Intensity of the blur.
+    amount = amount or 5
+    alpha = alpha or 255
+
+    surface.SetMaterial(blur)
+    surface.SetDrawColor(255, 0, 0, alpha)
+
+    local x, y = panel:LocalToScreen(0, 0)
+
+    for i = -(passes or 0.2), 1, 0.2 do
+        -- Do things to the blur material to make it blurry.
+        blur:SetFloat("$blur", i * amount)
+        blur:Recompute()
+
+        -- Draw the blur material over the screen.
+        render.UpdateScreenEffectTexture()
+        surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
+    end
+end

@@ -20,11 +20,11 @@ include "speak/vgui/themes.lua"
 
 include "cl_locale.lua"
 
+include "cl_emoji.lua"
+include "config/cl_emoji.lua"
 
-speak.emoticons = include "cl_emoticons.lua"
-include "config/cl_emoticons.lua"
-
-speak.tags = include "cl_tags.lua"
+include "cl_tags.lua"
+include "config/cl_tags.lua"
 
 speak.prefs = Preferences("speak")
 
@@ -95,6 +95,21 @@ speak.prefs:DefineBoolean("avatars_type", false, function(value)
   speak.avatarSheet = value and ModelSheet() or AvatarSheet()
 end)
 
+-- local theme = {
+--   fontName = "Inter",
+--   fontSize = 12,
+--   fontWeight = 500,
+--   fontBorderType = true,
+--   fontBorderBlur = .5,
+--   fontBorderOpacity = .75,
+
+--   outerBackgroundColor,
+--   innerBackgroundColor,
+--   outline
+--   padding
+
+-- }
+
 -- [[ font preferences ]]
 speak.prefs:DefineString("font_name", "Inter", function(value)
   speak.view.html:RunJavascript(string.format(
@@ -160,7 +175,7 @@ speak.notificationSounds = {
 function chat.AddText(...)
   local message = speak:ParseChatText(...)
   
-  speak.view:AppendLine(message)
+  speak.view:AddText(message)
   
   local consoleMessage = {}
   
@@ -217,7 +232,7 @@ local function tokenize(str)
   for pos1,pos2 in str:gmatch("()%:[%w_-]+%:()") do
     local emote = str:sub(pos1,pos2-1)
     
-    emote = speak.emoticons:Get(emote)
+    emote = speak.emoji:Get(emote)
     
     if emote then
       local before = str:sub(lastPos,pos1-1)
@@ -328,7 +343,7 @@ function chat.GetChatBoxSize()
 end
 
 function chat.IsOpen()
-  return speak.view:IsOpen()
+  return speak.view:GetOpen()
 end
 
 function chat.Open(mode)
@@ -454,8 +469,4 @@ end)
 -- disable old chat
 hook.Add("HUDShouldDraw", "speak.HUDShouldDraw", function(class)
   if class == "CHudChat" and IsValid(speak.view) then return false end
-end)
-
-net.Receive("speak.chataddtext", function(_)
-  chat.AddText(unpack(net.ReadTable()))
 end)
