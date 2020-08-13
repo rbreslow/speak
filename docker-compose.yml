@@ -4,6 +4,7 @@ services:
     image: quay.io/rbreslow/garrysmodds:slim
     volumes:
       - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
+    stdin_open: true
     tty: true
     ports:
       - "27015:27015"
@@ -20,6 +21,7 @@ services:
     image: node:10-slim
     volumes:
       - ./src/app:/usr/local/src
+      - ./src/speak/lua/speak/static:/usr/local/src/dist
     working_dir: /usr/local/src
     command: yarn watch
 

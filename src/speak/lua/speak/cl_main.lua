@@ -7,6 +7,7 @@ include "cl_util.lua"
 speak = speak or {}
 speak.vgui = {}
 
+include "speak/vgui/chatbox.lua"
 include "speak/vgui/checkbox.lua"
 include "speak/vgui/grid.lua"
 include "speak/vgui/menu.lua"
@@ -160,7 +161,7 @@ speak.notificationSounds = {
 function chat.AddText(...)
   local message = speak:ParseChatText(...)
   
-  speak.view:AppendLine(message)
+  speak.view:AddText(message)
   
   local consoleMessage = {}
   
@@ -328,7 +329,7 @@ function chat.GetChatBoxSize()
 end
 
 function chat.IsOpen()
-  return speak.view:IsOpen()
+  return speak.view:GetOpen()
 end
 
 function chat.Open(mode)
@@ -338,10 +339,25 @@ function chat.Open(mode)
     speak.view:Open(true)
   end
   
-  hook.Run("StartChat")
+  hook.Run("StartChat", not mode)
 end
 
 -- [[ hooks ]]
+hook.Add("StartChat", "EscapeClose", function(_)
+  local console = input.GetKeyCode(input.LookupBinding("toggleconsole"))
+
+  hook.Add("PreDrawHUD", "Speak_EscapeClose", function()
+    if input.IsKeyDown(console) then
+      gui.HideGameUI()
+      speak.view:MakePopup()
+    end
+	end)
+end)
+
+hook.Add("FinishChat", "Speak_EscapeClose", function()
+	hook.Remove("PreDrawHUD", "Speak_EscapeClose")
+end)
+
 hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
   if (bind == "messagemode" or bind == "say") and pressed then
     chat.Open(1)
@@ -352,22 +368,9 @@ hook.Add("PlayerBindPress", "speak.PlayerBindPress", function(_, bind, pressed)
   end
 end)
 
-
-local function initialize()  
-  include "speak/vgui/speak_chatbox.lua"
-
-  -- initialize the main chat frame
-  speak.view = vgui.Create("speak.Chatbox")
-end
-
--- autorefresh
-if speak.view then
-  speak.view:Remove()
-
-  initialize()
-else
-  hook.Add("Initialize", "speak.Initialize", initialize)
-end
+hook.Add("Initialize", "speak_Initialize", function()
+  speak.view = vgui.Create("speak_Chatbox")
+end)
 
 -- fired when the DHTML view has initialized
 hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
@@ -416,20 +419,6 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
 
     if speak.avatarSheet ~= nil then
       speak.avatarSheet:Render()
-    end
-  end)
-
-  hook.Add("PreRender", "speak.PreRender", function()
-    if not chat.IsOpen() or not gui.IsGameUIVisible() then
-      return false
-    end
-    
-    if input.IsKeyDown(KEY_ESCAPE) then
-      chat.Close()
-      gui.HideGameUI()
-    elseif input.IsKeyDown(KEY_BACKQUOTE) and input.LookupBinding("toggleconsole") == "`" then
-      gui.HideGameUI()
-      speak.view:RequestFocus()
     end
   end)
 end)

@@ -110,26 +110,24 @@ class ChatboxState {
 
       const canSay = /\S/.test(inputField.value);
 
-      if (canSay) {
-        speak.Close();
+      chat.close();
 
+      if (canSay) {
         if (this.isTeamChat) {
-          speak.SayTeam(inputField.value);
+          speak.sayTeam(inputField.value);
         } else {
-          speak.Say(inputField.value);
+          speak.say(inputField.value);
         }
 
         // avoid duplicates
         if (this.history[0] !== inputField.value) {
           this.history.unshift(inputField.value);
         }
-      } else {
-        speak.Close();
       }
 
       this.historyIndex = -1;
       inputField.value = '';
-      speak.TextChanged('');
+      hook.run('ChatTextChanged', '');
 
       this.awesomplete.close();
     }));
@@ -137,7 +135,7 @@ class ChatboxState {
     inputField.addEventListener('keydown', ((e) => {
       if (e.keyCode === 9) {
         if (!this.awesomplete.isOpened) {
-          speak.PressTab(inputField.value, (str) => {
+          hook.run('OnChatTab', inputField.value, (str) => {
             inputField.value = str;
           });
           e.preventDefault();
@@ -175,11 +173,11 @@ class ChatboxState {
       }
 
       if (inputField.value.length === 128) {
-        speak.MaxLengthHit();
+        surface.playSound('resource/warning.wav');
       }
     }));
 
-    inputField.addEventListener('input', () => speak.TextChanged(inputField.value));
+    inputField.addEventListener('input', () => hook.run('ChatTextChanged', inputField.value));
     settingsButton.addEventListener('click', () => speak.OpenSettings());
 
     // this is a hack to reduce the choppiness of the scroll() animation after
@@ -279,8 +277,9 @@ class ChatboxState {
     });
 
     // callback to Lua, chatbox has been initialized
-    if (typeof speak !== 'undefined' && has.call(speak, 'ChatInitialized')) {
-      speak.ChatInitialized();
+    if (typeof hook !== 'undefined' && has.call(hook, 'run')) {
+      console.log('chatbox has loaded');
+      hook.run('speak.ChatInitialized');
     }
   }
 
