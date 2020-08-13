@@ -20,6 +20,8 @@ AccessorFunc(speak.menu, "darkMode", "DarkMode", FORCE_BOOL)
 local PANEL = {}
 
 function PANEL:Init()
+    self:SetVisible(false)
+
     local skin = self:GetSkin()
     local tex = skin.GwenTexture
     -- get the HSL of the DPanel background texture
@@ -77,6 +79,10 @@ PANEL.AllowAutoRefresh = true
 
 derma.DefineControl("speak_Menu", "", PANEL, "DFrame")
 
+function speak.menu:Initialize()
+    self.panel = vgui.Create("speak_Menu")
+end
+
 function speak.menu:Toggle()
     self.open = not self.open
 
@@ -88,7 +94,6 @@ function speak.menu:Toggle()
             self.panel:Close()
         end
     else
-        self.panel = vgui.Create("speak_Menu")
         self.panel:MakePopup()
     end
 end
@@ -99,10 +104,12 @@ function speak.menu:Rebuild()
             self.panel:Close()
         else
             self.panel:Remove()
+            self:Initialize()
         end
     end  
 end
 
+hook.Add("Initialize", "speak_Menu", function() speak.menu:Initialize() end)
 hook.Add("SpeakLanguageChanged", "speak_Menu", function() speak.menu:Rebuild() end)
 hook.Add("preferences.policyupdate", "speak_Menu", function() speak.menu:Rebuild() end)  
 

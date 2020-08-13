@@ -4,10 +4,6 @@ local PANEL = {}
 
 AccessorFunc(PANEL, "open", "Open", FORCE_BOOL)
 
-local blur = Material("pp/blurscreen")
-local scrw = ScrW()
-local scrh = ScrH()
-
 function PANEL:Refresh()
   speak.logger.info "Refreshing HTML View"
   self:Close()
@@ -90,11 +86,6 @@ function PANEL:Clear()
   end
 end
 
-function PANEL:OnScreenSizeChanged(_, _)
-  scrw = ScrW()
-  scrh = ScrH()
-end
-
 function PANEL:Paint(w, h)
   if self:GetOpen() and not self.anim.fadingIn then
     self.anim.fadingIn = true
@@ -123,8 +114,8 @@ function PANEL:Paint(w, h)
     surface.SetDrawColor(Color(5, 5, 5, alpha))
     surface.DrawRect(0, 0, w, h)
 
-    -- surface.SetDrawColor(Color(0, 0, 0, 240))
-    -- self:DrawOutlinedRect()
+    surface.SetDrawColor(Color(0, 0, 0, alpha * 1.4))
+    self:DrawOutlinedRect()
   end
 end
 

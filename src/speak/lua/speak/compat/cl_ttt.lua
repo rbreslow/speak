@@ -27,7 +27,6 @@ local function findPlayer(str)
   return str
 end
 
-local type = type
 hook.Add("SpeakPreParseChatText", "speak.compat.ttt", function(message) 
   if isstring(message[2]) and isstring(message[4]) then
     local roleChat = message[2] == lastWords or

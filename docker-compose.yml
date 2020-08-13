@@ -5,6 +5,7 @@ services:
     volumes:
       - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
       - ~/Downloads/DarkRP-master:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/gamemodes/darkrp
+    stdin_open: true
     tty: true
     ports:
       - "27015:27015"

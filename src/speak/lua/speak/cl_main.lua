@@ -82,6 +82,7 @@ function speak.UpdateAvatars()
   speak.avatarSheet:Update(function(data)
     speak.view:SetStringProperty("avatarSheet", data)
   end)
+  speak.view:RefreshAutocomplete()
 end
 
 speak.prefs:DefineBoolean("avatars_enabled", false, function(value)
@@ -93,6 +94,7 @@ end)
 
 speak.prefs:DefineBoolean("avatars_type", false, function(value)
   speak.avatarSheet = value and ModelSheet() or AvatarSheet()
+  speak.UpdateAvatars()
 end)
 
 -- local theme = {
@@ -361,13 +363,9 @@ hook.Add("StartChat", "EscapeClose", function(_)
   local console = input.GetKeyCode(input.LookupBinding("toggleconsole"))
 
   hook.Add("PreDrawHUD", "Speak_EscapeClose", function()
-    if gui.IsGameUIVisible() then
+    if input.IsKeyDown(console) then
       gui.HideGameUI()
       speak.view:MakePopup()
-    end
-
-    if input.IsKeyDown(KEY_ESCAPE) then
-      chat.Close()
     end
 	end)
 end)
@@ -405,6 +403,7 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
   hook.Add("Think", "speak.Think", function()
     local players = player.GetAll()
     local currentPlayerCount = #players
+    local currentAvatarsType = speak.prefs:Get("avatars_type")
     local needToUpdateAvatars = false
 
     if currentPlayerCount ~= cachedPlayerCount then
@@ -427,7 +426,6 @@ hook.Add("speak.ChatInitialized", "speak.ChatInitialized", function()
 
     if needToUpdateAvatars then
       speak.UpdateAvatars()
-      speak.view:RefreshAutocomplete()
     end
   end)
 
