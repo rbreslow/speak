@@ -1,12 +1,10 @@
-local Emoticons = {}
-Emoticons.list = {}
+local emoji = {}
+emoji.list = {}
 
---[[ PUBLIC: ]]
-
---- Define an emoticon.
+--- Define an emoji.
 -- @param code The short code
 -- @param url The url to the image
-function Emoticons:Define(code, url)
+function emoji:Define(code, url)
   IS.enforce_arg(1, 'Define', 'string', type(code))
   IS.enforce_arg(2, 'Define', 'string', type(url))
 
@@ -18,9 +16,9 @@ function Emoticons:Define(code, url)
   self.list[code] = {code = code, url = url}
 end
 
---- Retrieve an emoticon.
+--- Retrieve an emoji.
 -- @param code The short code
-function Emoticons:Get(code)
+function emoji:Get(code)
   IS.enforce_arg(1, 'Get', 'string', type(code))
 
   if self.list[code] then
@@ -28,4 +26,4 @@ function Emoticons:Get(code)
   end
 end
 
-return Emoticons
+speak.emoji = emoji

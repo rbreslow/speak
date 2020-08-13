@@ -82,10 +82,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             yarn run build
 
         mkdir "${DIR}/../src/speak/lua/speak/gen"
-        echo "Building emoji autocompletion data"
-        emoji="$(jq -r '. |  map("\":" + .short_name + ":\"") | join(",")' "${DIR}/../src/app/node_modules/emoji-datasource/emoji.json")"
-        printf "return {%s}\n" "${emoji}" \
-            >"${DIR}/../src/speak/lua/speak/gen/emoji_data.lua"
         mkdir "${DIR}/../src/speak/lua/speak/static"
 
         printf "return \"%s\"\n" "$(git describe --always)" \

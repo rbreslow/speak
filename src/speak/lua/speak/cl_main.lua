@@ -21,9 +21,9 @@ include "speak/vgui/themes.lua"
 
 include "cl_locale.lua"
 
+include "cl_emoji.lua"
+include "config/cl_emoji.lua"
 
-speak.emoticons = include "cl_emoticons.lua"
-include "config/cl_emoticons.lua"
 
 speak.tags = include "cl_tags.lua"
 
@@ -218,7 +218,7 @@ local function tokenize(str)
   for pos1,pos2 in str:gmatch("()%:[%w_-]+%:()") do
     local emote = str:sub(pos1,pos2-1)
     
-    emote = speak.emoticons:Get(emote)
+    emote = speak.emoji:Get(emote)
     
     if emote then
       local before = str:sub(lastPos,pos1-1)

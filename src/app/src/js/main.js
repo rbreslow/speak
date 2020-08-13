@@ -14,6 +14,14 @@ emoji.img_sets.twitter.path = 'https://cdn.jsdelivr.net/npm/emoji-datasource-twi
 emoji.img_sets.facebook.path = 'https://cdn.jsdelivr.net/npm/emoji-datasource-facebook@4.1.0/img/facebook/64/';
 emoji.img_sets.messenger.path = 'https://cdn.jsdelivr.net/npm/emoji-datasource-messenger@4.1.0/img/messenger/64/';
 
+const emojiAutocompleteData = [];
+
+Object.values(emoji.data).forEach((obj) => {
+  obj[3].forEach((alias) => {
+    emojiAutocompleteData.push({ label: `:${alias}:`, value: '' });
+  });
+});
+
 const messages = document.getElementById('messages');
 const footer = document.getElementById('footer');
 const inputForm = document.getElementById('input-form');
@@ -292,7 +300,9 @@ class ChatboxState {
 
   refreshAutocomplete() {
     speak.GetAutocompleteData((data) => {
-      this.awesomplete.list = data;
+      // merge autocomplete data from garry's mod with autocomplete data
+      // assembled from static emoji data. user defined emojis take precedence.
+      this.awesomplete.list = data.concat(emojiAutocompleteData.filter((item) => data.findIndex((e) => item.label === e.label) < 0));
       this.awesomplete.evaluate();
     });
   }
