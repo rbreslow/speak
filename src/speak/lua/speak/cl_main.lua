@@ -24,8 +24,8 @@ include "cl_locale.lua"
 include "cl_emoji.lua"
 include "config/cl_emoji.lua"
 
-
-speak.tags = include "cl_tags.lua"
+include "cl_tags.lua"
+include "config/cl_tags.lua"
 
 speak.prefs = Preferences("speak")
 
@@ -450,9 +450,5 @@ end)
 
 -- disable old chat
 hook.Add("HUDShouldDraw", "speak.HUDShouldDraw", function(class)
-  if class == "CHudChat" then return false end
-end)
-
-net.Receive("speak.chataddtext", function(_)
-  chat.AddText(unpack(net.ReadTable()))
+  if class == "CHudChat" and IsValid(speak.view) then return false end
 end)

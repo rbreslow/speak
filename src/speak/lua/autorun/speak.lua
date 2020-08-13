@@ -6,6 +6,7 @@ include "speak/sh_main.lua"
 
 if SERVER then
     AddCSLuaFile "speak/config/cl_emoji.lua"
+    AddCSLuaFile "speak/config/cl_tags.lua"
     AddCSLuaFile "speak/config/sh_settings.lua"
 
     AddCSLuaFile "speak/lib/avatarsheet.lua"

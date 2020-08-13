@@ -9,5 +9,5 @@ dist/
 build/
 *.bz2
 src/css
-gen/
 static/
+*.gma

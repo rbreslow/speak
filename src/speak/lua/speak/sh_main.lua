@@ -3,7 +3,7 @@ CreateConVar("speak_version", include "speak/static/version.lua", bit.bor(FCVAR_
 IS = include "vendor/is.lua"
 
 speak = speak or {}
-speak.settings = include "config/sh_settings.lua"
+include "config/sh_settings.lua"
 
 speak.logger = include "vendor/log.lua"
 speak.logger.name = "speak"
