@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${SPEAK_DEBUG}" ]]; then
+  set -x
+fi
+
+function usage() {
+  echo -n "Usage: $(basename "$0")
+Attach to the SRCDS console. Detach with ctrl-d.
+"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  if [[ "${1:-}" == "--help" ]]; then
+    usage
+  else
+    container_id="$(docker-compose ps -q garrysmod)"
+
+    docker attach \
+      --detach-keys="ctrl-d" \
+      "${container_id}"
+  fi
+fi
