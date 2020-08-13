@@ -85,7 +85,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         mkdir "${DIR}/../src/speak/lua/speak/static"
 
         printf "return \"%s\"\n" "$(git describe --always)" \
-            >"${DIR}/../src/speak/lua/speak/gen/version.lua"
+            >"${DIR}/../src/speak/lua/speak/static/version.lua"
 
         echo "Building FastDL"
         update_fastdl
