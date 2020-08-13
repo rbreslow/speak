@@ -4,7 +4,6 @@ local ModelSheet = include "lib/modelsheet.lua"
 
 include "cl_util.lua"
 
-speak = speak or {}
 speak.vgui = {}
 
 include "speak/vgui/chatbox.lua"
