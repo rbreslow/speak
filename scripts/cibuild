@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [[ -n "${SPEAK_DEBUG}" ]]; then
     set -x
 fi
@@ -16,7 +18,7 @@ Build addon for distribution.
 function update_fastdl() {
     pushd "${DIR}/../src/speak"
 
-    resource_file="lua/speak/static/resources.lua"
+    resource_file="lua/speak/resources.lua"
     fastdl_root="../../dist/fastdl"
     prefixes=(resource sound)
 
@@ -65,35 +67,25 @@ else
     GIT_COMMIT="$(git rev-parse --short HEAD)"
 fi
 
-if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
-    if [ "${1:-}" = "--help" ]; then
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    if [[ "${1:-}" = "--help" ]]; then
         usage
     else
-        echo "Updating Yarn dependencies"
-        docker-compose \
-            run --rm --no-deps app \
-            yarn install
+        REACT_APP_GIT_COMMIT="${GIT_COMMIT}" \
+            ./scripts/update
 
         ./scripts/test
 
-        echo "Building static asset bundle"
-        GIT_COMMIT="${GIT_COMMIT}" docker-compose \
-            run --rm --no-deps app \
-            yarn run build
-
-        mkdir "${DIR}/../src/speak/lua/speak/static"
-
-        printf "return \"%s\"\n" "$(git describe --always)" \
-            >"${DIR}/../src/speak/lua/speak/static/version.lua"
-
-        echo "Building FastDL"
+        # Compress resources for FastDL
         update_fastdl
 
-        echo "Building Workshop GMA"
+        # Create workshop addon
         docker-compose run --rm \
-            gmad create -folder garrysmod/addons/speak -out /usr/local/src/out/speak.gma
+            gmad create \
+            -folder garrysmod/addons/speak \
+            -out /usr/local/src/out/speak.gma
 
-        echo "Building addon for distribution"
+        # Copy files for distribution
         mkdir -p "${DIR}/../dist/addons"
         rsync \
             -ar --delete \

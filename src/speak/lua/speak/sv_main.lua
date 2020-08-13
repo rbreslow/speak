@@ -1,5 +1,5 @@
 local function fastdl()
-  for _,path in ipairs(include "static/resources.lua") do
+  for _,path in ipairs(include "resources.lua") do
       -- empty/new line at eof
       if #path > 0 then
           speak.logger.trace("adding", path)

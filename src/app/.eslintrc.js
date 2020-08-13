@@ -4,6 +4,9 @@ module.exports = {
         "browser": true
     },
     "globals": {
-        "speak": "readonly"
+        "chat": "readonly",
+        "hook": "readonly",
+        "speak": "readonly",
+        "surface": "readonly"
     }
 };

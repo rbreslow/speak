@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - feature/jrb/ci
+  pull_request:
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: ./scripts/cibuild

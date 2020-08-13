@@ -11,3 +11,4 @@ build/
 src/css
 static/
 *.gma
+resources.lua

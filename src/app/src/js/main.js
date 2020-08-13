@@ -286,7 +286,6 @@ class ChatboxState {
 
     // callback to Lua, chatbox has been initialized
     if (typeof hook !== 'undefined' && has.call(hook, 'run')) {
-      console.log('chatbox has loaded');
       hook.run('speak.ChatInitialized');
     }
   }
@@ -302,7 +301,11 @@ class ChatboxState {
     speak.GetAutocompleteData((data) => {
       // merge autocomplete data from garry's mod with autocomplete data
       // assembled from static emoji data. user defined emojis take precedence.
-      this.awesomplete.list = data.concat(emojiAutocompleteData.filter((item) => data.findIndex((e) => item.label === e.label) < 0));
+      this.awesomplete.list = data.concat(
+        emojiAutocompleteData.filter(
+          (item) => data.findIndex((e) => item.label === e.label) < 0,
+        ),
+      );
       this.awesomplete.evaluate();
     });
   }
