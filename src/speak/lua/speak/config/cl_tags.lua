@@ -17,7 +17,3 @@ speak.tags:DefineForUserGroup("admin", {
 speak.tags:DefineForSteamID64(76561197960279927, {
     COLOR_MAGENTA, "(VIP)"
 })
-
-speak.tags:DefineForSteamID64(76561198058648898, {
-    COLOR_MAGENTA, "(VIP)"
-})
