@@ -1,6 +1,6 @@
-Preferences = include "lib/preferences.lua"
-AvatarSheet = include "lib/avatarsheet.lua"
-ModelSheet = include "lib/modelsheet.lua"
+local Preferences = include "lib/preferences.lua"
+local AvatarSheet = include "lib/avatarsheet.lua"
+local ModelSheet = include "lib/modelsheet.lua"
 
 include "cl_util.lua"
 
