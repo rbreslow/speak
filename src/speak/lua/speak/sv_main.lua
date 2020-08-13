@@ -1,17 +1,16 @@
-speak = speak or {}
+local function fastdl()
+  for _,path in ipairs(include "static/resources.lua") do
+      -- empty/new line at eof
+      if #path > 0 then
+          speak.logger.trace("adding", path)
+          resource.AddFile(path)
+      end
+  end
+end
 
-speak.tags = include "sv_tags.lua"
-include "config/sv_tags.lua"
-speak.tags:UpdateClients()
-
-include "sv_resource.lua"
-
-chat = chat or {}
-
-util.AddNetworkString("speak.chataddtext")
-
-function chat.AddText(...)
-  net.Start("speak.chataddtext")
-  net.WriteTable({...})
-  net.Broadcast()
+if speak.settings.FAST_DL then
+  fastdl()
+else
+  speak.logger.trace("adding workshop addon", speak.settings.WORKSHOP_ID)
+  resource.AddWorkshop(speak.settings.WORKSHOP_ID)
 end

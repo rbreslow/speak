@@ -16,7 +16,7 @@ Build addon for distribution.
 function update_fastdl() {
     pushd "${DIR}/../src/speak"
 
-    resource_file="lua/speak/gen/resources.lua"
+    resource_file="lua/speak/static/resources.lua"
     fastdl_root="../../dist/fastdl"
     prefixes=(resource sound)
 
@@ -81,11 +81,10 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             run --rm --no-deps app \
             yarn run build
 
-        mkdir "${DIR}/../src/speak/lua/speak/gen"
         mkdir "${DIR}/../src/speak/lua/speak/static"
 
         printf "return \"%s\"\n" "$(git describe --always)" \
-            >"${DIR}/../src/speak/lua/speak/gen/version.lua"
+            >"${DIR}/../src/speak/lua/speak/static/version.lua"
 
         echo "Building FastDL"
         update_fastdl

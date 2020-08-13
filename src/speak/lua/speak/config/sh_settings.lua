@@ -5,4 +5,4 @@ settings.LOG_LEVEL = "trace"
 settings.FAST_DL = false
 settings.WORKSHOP_ID = "2030639821"
 
-return settings
+speak.settings = settings

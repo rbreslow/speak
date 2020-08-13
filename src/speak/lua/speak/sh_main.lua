@@ -1,7 +1,9 @@
+CreateConVar("speak_version", include "speak/static/version.lua", bit.bor(FCVAR_SPONLY, FCVAR_REPLICATED, FCVAR_NOTIFY), "")
+
 IS = include "vendor/is.lua"
 
 speak = speak or {}
-speak.settings = include "config/sh_settings.lua"
+include "config/sh_settings.lua"
 
 speak.logger = include "vendor/log.lua"
 speak.logger.name = "speak"
@@ -39,5 +41,3 @@ function ChatFontMultiplier(multiplier)
     value = multiplier
   }
 end
-
-speak.logger.info("speak", "version:", include "gen/version.lua")
