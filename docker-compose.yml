@@ -23,7 +23,15 @@ services:
       - ./src/app:/usr/local/src
       - ./src/speak/lua/speak/static:/usr/local/src/dist
     working_dir: /usr/local/src
+    environment:
+      - REACT_APP_GIT_COMMIT=${REACT_APP_GIT_COMMIT:-latest}
     command: yarn watch
+
+  shellcheck:
+    image: koalaman/shellcheck:stable
+    volumes:
+      - ./:/usr/local/src
+    working_dir: /usr/local/src
 
   luacheck:
     image: quay.io/rbreslow/luacheck:0.23.0-1
@@ -33,6 +41,7 @@ services:
 
   gmad:
     image: quay.io/rbreslow/garrysmodds:slim
+    user: root
     environment:
       - LD_LIBRARY_PATH=./bin
     volumes:

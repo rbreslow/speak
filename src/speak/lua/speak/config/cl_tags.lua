@@ -1,8 +1,9 @@
--- https://www.colorhexa.com
+-- luacheck: push ignore
 local COLOR_RED = Color(225, 29, 33)
 local COLOR_GREEN = Color(131, 225, 29)
 local COLOR_BLUE = Color(29, 131, 225)
 local COLOR_MAGENTA = Color(225, 29, 131)
+-- luacheck: pop
 
 -- [[ Chat Tags ]]
 speak.tags:DefineForUserGroup("superadmin", {

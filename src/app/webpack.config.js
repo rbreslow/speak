@@ -40,6 +40,10 @@ if IsValid(speak.view) then
 end
 `
           );
+          fs.writeFileSync(
+            path.resolve(__dirname, 'dist/version.lua'),
+            `return "${process.env.REACT_APP_GIT_COMMIT}"`
+          );
         } catch(err) {
           console.log(err);
         }

@@ -1,4 +1,4 @@
-# Speak
+# Speak [![CI](https://github.com/rbreslow/speak/workflows/CI/badge.svg?branch=develop)](https://github.com/rbreslow/speak/actions?query=workflow%3ACI)
 
 A Garry's Mod chatbox addon 💬.
 
@@ -14,13 +14,13 @@ A Garry's Mod chatbox addon 💬.
 
 ## Development
 
-First, rebuild the static asset bundle:
+First, make sure dependencies are up-to-date:
 
 ```bash
-./scripts/cibuild
+./scripts/update
 ```
 
-Then, launch the Source Dedicated Server (srcds) instance:
+Then, launch the Source Dedicated Server (SRCDS) instance:
 
 ```bash
 ./scripts/server
@@ -30,13 +30,14 @@ Then, launch the Source Dedicated Server (srcds) instance:
 
 | Service                         | Port                                       |
 |---------------------------------|--------------------------------------------|
-| Source Dedicated Server (srcds) | [`27015`](steam://connect/localhost:27015) |
+| Source Dedicated Server (SRCDS) | [`27015`](steam://connect/localhost:27015) |
 
 ## Scripts
 
-| Name      | Description                                                             |
-|-----------|-------------------------------------------------------------------------|
-| `cibuild` | Build addon for distribution.                                           |
-| `console` | Attach to the SRCDS console. Detach with <kbd>ctrl</kbd> + <kbd>d</kbd> |
-| `server`  | Start SRCDS.                                                            |
-| `test`    | Run tests.                                                              |
+| Name      | Description                                                              |
+|-----------|--------------------------------------------------------------------------|
+| `cibuild` | Build addon for distribution.                                            |
+| `console` | Attach to the SRCDS console. Detach with <kbd>ctrl</kbd> + <kbd>d</kbd>. |
+| `server`  | Start SRCDS.                                                             |
+| `test`    | Run tests.                                                               |
+| `update`  | Update dependencies and static asset bundle.                             |

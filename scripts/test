@@ -12,18 +12,23 @@ Run tests.
 "
 }
 
-if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
-    if [ "${1:-}" = "--help" ]; then
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    if [[ "${1:-}" = "--help" ]]; then
         usage
     else
-        echo "Linting Lua sources"
+        # Lint Bash scripts
         docker-compose \
-            run --rm --no-deps \
-            luacheck .
+            run --rm --no-deps shellcheck \
+            scripts/*
 
-        echo "Linting JavaScript sources"
+        # Lint JavaScript sources
         docker-compose \
             run --rm --no-deps app \
             yarn lint
+
+        # Lint Lua sources
+        docker-compose \
+            run --rm --no-deps \
+            luacheck .
     fi
 fi
