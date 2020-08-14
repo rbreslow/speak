@@ -1,4 +1,4 @@
-# Speak
+# Speak [![CI](https://github.com/rbreslow/speak/workflows/CI/badge.svg?branch=develop)](https://github.com/rbreslow/speak/actions?query=workflow%3ACI)
 
 A Garry's Mod chatbox addon 💬.
 
