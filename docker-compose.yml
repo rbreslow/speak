@@ -27,6 +27,12 @@ services:
       - REACT_APP_GIT_COMMIT=${REACT_APP_GIT_COMMIT:-latest}
     command: yarn watch
 
+  shellcheck:
+    image: koalaman/shellcheck:stable
+    volumes:
+      - ./:/usr/local/src
+    working_dir: /usr/local/src
+
   luacheck:
     image: quay.io/rbreslow/luacheck:0.23.0-1
     volumes:

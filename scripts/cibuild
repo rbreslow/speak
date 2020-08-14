@@ -27,10 +27,10 @@ function update_fastdl() {
     printf "return {" >"${resource_file}"
 
     for prefix in "${prefixes[@]}"; do
-        find . -type d -name "${prefix}" | while read dir; do
-            find "${dir}" -type f ! -name '*.bz2' -a ! -name '.DS_Store' | while read file; do
+        find . -type d -name "${prefix}" | while read -r dir; do
+            find "${dir}" -type f ! -name '*.bz2' -a ! -name '.DS_Store' | while read -r file; do
                 # Virtual path of the file for resource.AddFile( string path )
-                resource="$(echo ${file#"./"} | sed -E 's/speak\/[[:alnum:]]+\/(.+)/\1/')"
+                resource="$(echo "${file#"./"}" | sed -E 's/speak\/[[:alnum:]]+\/(.+)/\1/')"
 
                 # Append new resource.AddFile( string path ) statement
                 echo "Processing ${resource}"
