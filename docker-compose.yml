@@ -3,7 +3,7 @@ services:
   garrysmod:
     image: quay.io/rbreslow/garrysmodds:slim
     volumes:
-      - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
+      - ./src/speak:/var/lib/steam/.steam/steamapps/common/GarrysModDS/garrysmod/addons/speak
     stdin_open: true
     tty: true
     ports:
@@ -14,7 +14,7 @@ services:
       "-maxplayers 16",
       "+gamemode sandbox",
       "+sv_password secret",
-      "map gm_contruct"
+      "+map gm_construct"
     ]
 
   app:
@@ -46,5 +46,5 @@ services:
       - LD_LIBRARY_PATH=./bin
     volumes:
       - ./dist:/usr/local/src/out
-      - ./src/speak:/var/lib/steam/.steam/SteamApps/common/GarrysModDS/garrysmod/addons/speak
+      - ./src/speak:/var/lib/steam/.steam/steamapps/common/GarrysModDS/garrysmod/addons/speak
     entrypoint: ./bin/gmad_linux
