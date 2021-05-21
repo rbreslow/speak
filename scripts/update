@@ -17,12 +17,15 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     if [[ "${1:-}" == "--help" ]]; then
         usage
     else
-        echo "Updating Yarn dependencies"
+        # Ensure container images are current
+        docker-compose build --pull
+
+        # Update Yarn dependencies
         docker-compose \
             run --rm --no-deps app \
             yarn install
 
-        echo "Building static asset bundle"
+        # Build static asset bundle
         docker-compose \
             run --rm --no-deps app \
             yarn run build
