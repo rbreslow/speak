@@ -1,6 +1,8 @@
-# Speak [![CI](https://github.com/rbreslow/speak/workflows/CI/badge.svg?branch=develop)](https://github.com/rbreslow/speak/actions?query=workflow%3ACI)
+# Speak 💬 [![CI](https://github.com/rbreslow/speak/workflows/CI/badge.svg?branch=develop)](https://github.com/rbreslow/speak/actions?query=workflow%3ACI)
 
-A Garry's Mod chatbox addon 💬.
+Speak is a drop-in replacement for the default chatbox in Garry's Mod, written in JavaScript and Lua.
+
+![image](https://user-images.githubusercontent.com/1774125/119199893-e44c6680-ba59-11eb-8508-50b67432bda3.png)
 
 - [Requirements](#requirements)
 - [Development](#development)
